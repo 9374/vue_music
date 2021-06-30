@@ -1,11 +1,15 @@
 <template>
   <div id="app">
-    <Header />
-    <el-container>
-      <Aside> </Aside>
-      <el-main class="main"> <router-view /></el-main>
+    <el-container style="height: 100vh">
+      <Header />
+      <el-container>
+        <Aside> </Aside>
+        <el-main class="view" style="padding: 5px 20px">
+          <keep-alive> <router-view class="main"></router-view></keep-alive>
+        </el-main>
+      </el-container>
+      <Footer />
     </el-container>
-    <Footer />
   </div>
 </template>
 
@@ -29,6 +33,14 @@ export default {
 }
 </script>
 <style lang="less">
+.view {
+  max-height: 82vh;
+  width: 85vw;
+  position: absolute;
+  top: 10vh;
+  left: 15vw;
+}
+
 * {
   margin: 0;
   padding: 0;

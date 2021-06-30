@@ -1,60 +1,68 @@
 <template>
-  <el-container>
-    <el-header class="head">
-      <el-popover
-        ref="popover"
-        placement="bottom-start"
-        width="280"
-        :title="searchlist.length === 0 ? '热门搜索' : ''"
-        trigger="focus"
-      >
-        <div>
-          <div v-if="searchlist.length === 0" class="hot_search">
-            <ul class="hot_name_wrap">
-              <li
-                @click="addhot(item.first)"
-                v-for="item in hotList"
-                :key="item.first"
-                class="hot_item"
-              >
-                {{ item.first }}
-              </li>
-            </ul>
+  <el-header class="head" style="width: 100vw">
+    <el-popover
+      ref="popover"
+      placement="bottom-start"
+      width="280"
+      :title="searchlist.length === 0 ? '热门搜索' : ''"
+      trigger="focus"
+    >
+      <div>
+        <div v-if="searchlist.length === 0" class="hot_search">
+          <ul class="hot_name_wrap">
+            <li
+              @click="addhot(item.first)"
+              v-for="item in hotList"
+              :key="item.first"
+              class="hot_item"
+            >
+              {{ item.first }}
+            </li>
+          </ul>
+        </div>
+        <!-- 搜索结果 -->
+        <div v-else class="hot_search">
+          <div class="btn">
+            <el-button type="info" size="mini" disabled round
+              >清空搜索列表</el-button
+            >
+            <el-button
+              @click="$router.push('/home/searchList/' + input)"
+              type="primary"
+              size="mini"
+              round
+              >详细列表
+              <!-- <router-link to="/">详细列表</router-link> -->
+            </el-button>
           </div>
-          <!-- 搜索结果 -->
-          <div v-else class="hot_search">
-            <div class="btn">
-              <el-button type="info" size="mini" round>清空搜索列表</el-button>
-              <el-button type="primary" size="mini" round>详细列表</el-button>
-            </div>
-            <p class="hot_title">搜索结果</p>
-            <div v-for="item in searchlist" :key="item.id">
-              <el-divider></el-divider>
-              <SongItem
-                :songName="item.name"
-                :author="item.artists[0].name"
-                :album="item.album.name"
-                :id="item.id"
-              />
-            </div>
+          <p class="hot_title">搜索结果</p>
+          <div v-for="item in searchlist" :key="item.id">
+            <el-divider></el-divider>
+            <SongItem
+              :songName="item.name"
+              :author="item.artists[0].name"
+              :album="item.album.name"
+              :id="item.id"
+            />
           </div>
         </div>
-      </el-popover>
-      <el-input
-        v-popover:popover
-        size="small"
-        span="12"
-        v-model="input"
-        placeholder="搜索音乐"
-        :style="{ width: '200px', borderRadius: '30px' }"
-      ></el-input>
+      </div>
+    </el-popover>
+    <el-input
+      v-popover:popover
+      size="small"
+      span="12"
+      v-model="input"
+      placeholder="搜索音乐"
+      :style="{ width: '200px', borderRadius: '30px' }"
+    ></el-input>
 
-      <div serchlist></div>
-    </el-header>
-  </el-container>
+    <div serchlist></div>
+  </el-header>
 </template>
 
 <script>
+
 import { searchApi, hotSearchNameApi } from '../api/search'
 import SongItem from '../components/SongItem.vue'
 export default {
@@ -75,10 +83,11 @@ export default {
     SongItem
   },
   methods: {
+
     getSearch () {
       clearTimeout(this.timer)
       this.timer = setTimeout(async () => {
-        const { data } = await searchApi(this.input)
+        const { data } = await searchApi(this.input, 5)
         console.log(data)
         this.searchlist = data.result?.songs || []
       }, 600)
@@ -91,6 +100,7 @@ export default {
     addhot (hot) {
       this.input = hot
     }
+
   },
   created () {
     this.getHotKeys()
@@ -100,8 +110,12 @@ export default {
 
 <style lang='less' scoped>
 .head {
+  height: 10vh;
   background-color: #ec4141;
-  line-height: 60px;
+  line-height: 10vh;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .hot_title {
@@ -128,5 +142,9 @@ export default {
 .btn {
   position: absolute;
   right: 10px;
+  a {
+    text-decoration: none;
+    color: #fff;
+  }
 }
 </style>

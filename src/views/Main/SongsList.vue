@@ -1,5 +1,6 @@
 <template>
-  <div class="main">
+  <!-- <el-main > -->
+  <div v-if="seeSongsList !== null" class="main">
     <div class="head">
       <div class="pic"><img :src="seeSongsList.coverImgUrl" alt="" /></div>
       <div class="info">
@@ -7,8 +8,6 @@
         <div class="user">
           <el-avatar :src="seeSongsList.creator.avatarUrl"></el-avatar>
           <p>{{ seeSongsList.creator.nickname }}</p>
-
-          <!-- <span>{{seeSongsList.birthday}}</span> -->
         </div>
 
         <p>
@@ -22,39 +21,79 @@
         </p>
         <p class="description">简介:{{ seeSongsList.description }}</p>
         <div class="btn">
-          <el-button type="primary" disabled round>播放全部(未开发)</el-button>
-          <el-button type="primary" disabled round>收藏(未开发)</el-button>
+          <el-button type="primary" disabled round>播放全部(未)</el-button>
+          <el-button type="primary" disabled round>收藏(未)</el-button>
         </div>
       </div>
     </div>
-    <!-- <div class="pic">
-      <img src="" alt="" />
-    </div> -->
-    <!-- <p class="title">歌曲列表</p> -->
-    <template>
+    <p class="title">歌曲列表</p>
+    <!-- 通过作用域插槽，获取row数据，实现一些功能（编辑，拿到id跳转数据详情页；格式化数据） -->
+    <!-- <template>
       <el-table :data="seeSongsList.tracks" stripe style="width: 100%">
-        <el-table-column prop="" width="100"> </el-table-column>
-        <el-table-column prop="name" label="音乐标题" width="350">
-        </el-table-column>
-        <el-table-column prop="ar[0].name" label="歌手" width="250">
-        </el-table-column>
-        <el-table-column prop="al.name" label="专辑" width="250">
-        </el-table-column>
-        <!-- <el-table-column prop="date" label="时长" width="250">
-        </el-table-column> -->
-        <el-table-column prop="date" label="操作" width="250">
+        <el-table-column prop="" width="50"> </el-table-column>
+        <el-table-column prop="name" label="音乐标题"> </el-table-column>
+        <el-table-column prop="ar[0].name" label="歌手"> </el-table-column>
+        <el-table-column prop="al.name" label="专辑"> </el-table-column>
+        <el-table-column prop="date" label="操作" width="300">
+          <template #default="{ row }">
+            <el-button type="primary" @click="onPlay(row.id)" round
+              >播放音乐{{ row.id }}
+            </el-button>
+            <el-button type="success" disabled round>添加到歌单</el-button>
+          </template>
         </el-table-column>
       </el-table>
-    </template>
+    </template> -->
+    <SongsTable status="list" :SongsList="seeSongsList.tracks" />
   </div>
+  <!-- </el-main> -->
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import SongsTable from '@/components/SongsTable.vue'
+import { mapMutations } from 'vuex'
+import { GetSongsListAPI } from '@/api/mainapi'
 export default {
-  computed: {
-    ...mapState(['seeSongsList'])
+  watch: {
+    id () {
+      this.seeSongsList = null
+      this.getSongsList()
+    }
+  },
+  // 获取歌单信息
+  created () {
+    // console.log(this.id)
+    this.getSongsList()
+  },
+  data () {
+    return {
+      //  保存歌单列表
+      seeSongsList: null
+    }
+  },
+  props: ['id'],
+  methods: {
+    ...mapMutations(['changePlayId']),
+    // 获取歌单列表的函数
+    async getSongsList () {
+      const { data: res } = await GetSongsListAPI(this.id)
+      // console.log(res)
+      if (res.code === 200) {
+        // console.log(res)
+        this.seeSongsList = res.playlist
+        // console.log(this.seeSongsList)
+      }
+    },
+    onPlay (palyid) {
+      this.changePlayId(palyid)
+    }
+
+  },
+  components: {
+    SongsTable
   }
+  // 页面加载自动获取歌单信息
+
 }
 </script>
 
@@ -62,15 +101,15 @@ export default {
 .box {
   float: right;
 }
-.main {
-  padding: 0 30px;
-  position: absolute;
-  left: 300px;
-  right: 0px;
-  top: 60px;
-  bottom: 0px;
-  padding-bottom: 60px;
-}
+// .main {
+//   padding: 0 30px;
+//   position: absolute;
+//   left: 300px;
+//   right: 0px;
+//   top: 60px;
+//   bottom: 0px;
+//   padding-bottom: 60px;
+// }
 .title {
   padding: 0.266667rem 0.24rem;
   margin: 10px 0;

@@ -7,12 +7,16 @@
       </p>
     </div>
     <div class="song_right">
-      <i class="el-icon-caret-right"></i>
+      <!-- <i class="el-icon-caret-right"></i> -->
+      <el-button type="primary" @click="onPlay(id)" round
+        ><i class="el-icon-video-play"></i> 播放音乐</el-button
+      >
     </div>
   </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   props: {
     // 歌名
@@ -34,13 +38,20 @@ export default {
     }
   },
   methods: {
-
+    ...mapMutations(['changePlayId']),
+    onPlay (palyid) {
+      this.changePlayId(palyid)
+    }
   }
+
 }
 
 </script>
 
 <style lang="less" scoped>
+.el-icon-video-play {
+  margin-right: 7px;
+}
 /*歌单样式*/
 .song_item_wrap {
   display: flex;

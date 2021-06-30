@@ -1,18 +1,21 @@
 <template>
   <div>
-    <!--           @click.native="getSongsList(item.id)" -->
-    <p class="title">推荐歌单</p>
-    <el-row type="flex" :gutter="40" align="top" justify="space-around">
-      <el-col :span="4" v-for="item in list" :key="item.id" class="card">
-        <el-card
-          shadow="hover"
-          :body-style="{ padding: '0px' }"
-          @click.native="$router.push('/home/songsList/' + item.id)"
-        >
+    <!--    @click.native="getSongsList(item.id)" -->
+    <!--  -->
+    <!-- <p class="title"></p> -->
+    <el-row type="flex" :gutter="10" align="top" justify="space-around">
+      <el-col
+        @click.native="$router.push('/home/songsList/' + item.id)"
+        :span="6"
+        v-for="item in list"
+        :key="item.id"
+        class="card"
+      >
+        <el-card shadow="hover" :body-style="{ padding: '0px' }">
           <el-image
             :lazy="true"
             class="image"
-            :src="item.picUrl"
+            :src="item.picUrl || item.coverImgUrl"
             :fit="fits[2]"
           ></el-image>
           <div style="padding: 14px">
@@ -29,29 +32,33 @@
 </template>
 
 <script>
-import { GetFound } from '../../../api/mainapi'
-// import { mapMutations } from 'vuex'
+// import { GetSongsListAPI } from '@/api/mainapi'
+
 export default {
   data () {
     return {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
-      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-      list: []
+      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
     }
   },
-  created () {
-    this.getFoundlist()
+  props: {
+    list: {
+      type: Array,
+      required: true
+    }
   },
   methods: {
-    // ...mapMutations(['changeSeeSongsList']),
-    async getFoundlist () {
-      const { data: { result } } = await GetFound(12)
-      // console.log(result)
-      this.list = result
-    }
-  }
-}
+    // async getSongsList (id) {
+    //   const { data: res } = await GetSongsListAPI(id)
+    //   if (res.code === 200) {
+    //     console.log(res)
 
+    //     // this.changeSeeSongsList(res.playlist)
+    //   }
+    // }
+  }
+
+}
 </script>
 
 <style lang="less" scoped>

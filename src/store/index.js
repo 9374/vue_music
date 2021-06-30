@@ -4,16 +4,20 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
-    seeSongsList: [],
-    showSongslist: false
+    playId: 0,
+    playList: []
   },
   mutations: {
-    changeSeeSongsList (state, payload) {
-      state.seeSongsList = payload
+    changePlayId (state, payload) {
+      state.playId = payload
+    },
+    addPlayList (state, payload) {
+      state.playList.push(payload)
+    },
+    clearPlayList (state) {
+      state.playList = []
     }
-  },
-  modules: {
-
   }
+
 })
 export default store

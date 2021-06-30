@@ -1,25 +1,24 @@
 <template>
-  <el-main class="main">
+  <!-- <el-main class="main"> -->
+  <div>
     <el-menu
+      router
       :default-active="activeIndex"
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
     >
-      <el-menu-item index="1">
-        <router-link to="/">个性推荐</router-link>
-      </el-menu-item>
-      <el-menu-item index="2">
-        <router-link to="/home/allSongsList">歌单</router-link>
-      </el-menu-item>
-      <el-menu-item index="3">
-        <router-link to="/home/newmusiclist">最新音乐</router-link>
-      </el-menu-item>
+      <el-menu-item index="/home"> 个性推荐 </el-menu-item>
+      <el-menu-item index="/home/allSongsList">歌单 </el-menu-item>
+      <el-menu-item index="/home/newmusiclist">最新音乐 </el-menu-item>
     </el-menu>
 
     <div class="line"></div>
-    <router-view> </router-view>
-  </el-main>
+    <keep-alive>
+      <router-view> </router-view>
+    </keep-alive>
+  </div>
+  <!-- </el-main> -->
 </template>
 
 <script>
@@ -27,7 +26,7 @@ import { mapState } from 'vuex'
 export default {
   data () {
     return {
-      activeIndex: '1'
+      activeIndex: '/home'
       // activeIndex2: '1'
     }
   },
@@ -44,14 +43,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.main {
-  position: absolute;
-  left: 300px;
-  right: 0px;
-  top: 60px;
-  bottom: 0px;
-  padding-bottom: 60px;
-}
 a {
   text-decoration: none;
 }
