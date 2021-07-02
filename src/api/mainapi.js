@@ -53,3 +53,13 @@ export const GetnewSongAPI = function (limit) {
     }
   })
 }
+
+// 获取当前播放音乐的详情
+export const getCurrentPlayAPI = function (ids) {
+  return request({
+    url: '/song/detail',
+    params: {
+      ids
+    }
+  })
+}

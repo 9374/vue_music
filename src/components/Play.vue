@@ -1,61 +1,75 @@
 <template>
   <el-row>
     <el-col :span="12">
-      <audio ref="audio" controls :src="playurl" autoplay></audio
-    ></el-col>
-    <el-col :span="12">
       <div class="player">
-        <div class="disk" :class="{ disk__playing: isPlaying }">
-          <!-- 旋转封面 -->
-          <label
-            class="disk_cover"
-            ref="cover"
-            for="file"
-            :style="{
-              transform: stopMatrix,
-              backgroundImage: coverUrl ? `url(${coverUrl})` : '',
-            }"
-          />
+        <div class="player_disk">
+          <div class="disk" :class="{ disk__playing: isPlaying }">
+            <!-- 旋转封面 -->
+            <label
+              class="disk_cover"
+              ref="cover"
+              for="file"
+              :style="{
+                transform: stopMatrix,
+                backgroundImage: coverUrl ? `url(${coverUrl})` : '',
+              }"
+            />
+            <!-- backgroundImage: coverUrl ? `url(${coverUrl})` : '', -->
+          </div>
         </div>
         <!-- 控制部分 -->
-        <div class="control" :class="{ control__playing: isPlaying }">
-          <div class="control_btn control_btn__side">
-            <!-- 下一曲-->
-            <i class="el-icon-arrow-left" />
-          </div>
-          <div class="control_btn">
-            <!-- 播放按钮 -->
-            <i @click="play" :class="icon"> </i>
-            <!-- <span class="play-btn" /> -->
-          </div>
-          <!--    上一曲 -->
-          <div class="control_btn control_btn__side">
-            <i class="el-icon-arrow-right" />
+        <div class="player_control">
+          <div class="control" :class="{ control__playing: isPlaying }">
+            <div class="control_btn control_btn__side">
+              <!-- 下一曲-->
+              <i class="el-icon-arrow-left" />
+            </div>
+            <div class="control_btn">
+              <!-- 播放按钮 -->
+              <i @click="play" :class="icon"> </i>
+              <!-- <span class="play-btn" /> -->
+            </div>
+            <!--    上一曲 -->
+            <div class="control_btn control_btn__side">
+              <i class="el-icon-arrow-right" />
+            </div>
           </div>
         </div>
         <!--  // 播放进度-->
-        <div class="progress" :class="{ progress__playing: isPlaying }">
-          <!-- 歌曲名称 -->
-          <h2 class="progress_title">{{ name }}</h2>
-          <!-- 歌曲时间 -->
-          <p class="progress_text">
-            {{ position }} /
-            {{ s_to_hs(duration) }}
-          </p>
-          <!--  //duration -->
-          <!-- 进度条 -->
-          <div class="progress_line">
-            <span :style="{ width: progress }" />
+        <div class="player_progress">
+          <div class="progress" :class="{ progress__playing: isPlaying }">
+            <!-- 歌曲名称 -->
+            <h2 class="progress_title">{{ currentPlay.name }}</h2>
+            <!-- 歌曲时间 -->
+            <p class="progress_text">
+              {{ s_to_hs(position) }} /
+              {{ s_to_hs(duration) }}
+            </p>
+            <!--  //duration -->
+            <!-- 进度条 -->
+            <div class="progress_line">
+              <span :style="{ width: progress }" />
+            </div>
           </div>
         </div>
       </div>
       ></el-col
     >
+    <el-col :span="12">
+      <audio
+        ref="audio"
+        @canplay="getDuration"
+        controls
+        :src="playurl"
+        autoplay
+        @ended="end"
+      ></audio
+    ></el-col>
   </el-row>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState, mapGetters } from 'vuex'
 export default {
   data () {
     return {
@@ -68,35 +82,62 @@ export default {
       position: 0,
       // 总时间
       duration: 0,
-      // 进度条
-      progress: 0,
-      playSong: {}
+      // 进度条 定义在计算属性
+      // progress: 0,
+      playSong: {},
+      timer: null
     }
   },
   watch: {
     playId (newval) {
       this.changeUrl()
+      this.isPlaying = true
+      this.getCover()
+    },
+    playurl () {
+      if (!this.playurl) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
     }
   },
   methods: {
     changeUrl () {
       this.playurl = `https://music.163.com/song/media/outer/url?id=${this.playId}.mp3`
-      this.$nextTick(() => {
-        this.duration = this.$refs.audio.duration
-      })
+      // 更新播放进度事件
+      clearInterval(this.timer)
+      this.timer = null
+      this.timer = setInterval(() => {
+        this.position = this.$refs.audio.currentTime
+      }, 1000)
+      this.getCover()
+    },
+    getDuration () {
+      this.duration = this.$refs.audio.duration
     },
     ...mapMutations(['changePlayId']),
     play () {
       if (this.isPlaying) {
+        console.log(this.$refs.audio)
         // console.log()
         this.$refs.audio.pause()
-        this.duration = this.$refs.audio.duration
-        console.log(this.$refs.audio.duration)
+        // 更新播放进度事件
+        clearInterval(this.timer)
+        this.timer = null
       } else {
         this.$refs.audio.play()
-        console.log(this.$refs.audio.duration)
+        // 更新播放进度事件
+        clearInterval(this.timer)
+        this.timer = null
+        this.timer = setInterval(() => {
+          this.position = this.$refs.audio.currentTime
+        }, 1000)
       }
       this.isPlaying = !this.isPlaying
+    },
+    end () {
+      clearInterval(this.timer)
+      this.timer = null
     },
     s_to_hs (s) {
       // 计算分钟
@@ -105,29 +146,50 @@ export default {
       h = Math.floor(s / 60)
       // 计算秒
       // 算法：取得秒%60的余数，既得到秒数
-      s = s % 60
+      s = parseInt(s % 60)
       // 将变量转换为字符串
       h += ''
       s += ''
       // 如果只有一位数，前面增加一个0
       h = (h.length === 1) ? '0' + h : h
       s = (s.length === 1) ? '0' + s : s
-      s = s.substring(0, 2)
+      // s = s.substring(0, 2)
       return h + ':' + s
+    },
+    // 更新封面
+    getCover () {
+      setTimeout(() => {
+        // console.log('我是play', this.currentPlay)
+        this.coverUrl = this.currentPlay.al.picUrl + '?param=200y200'
+        // http://p4.music.126.net/JzNK4a5PjjPIXAgVlqEc5Q==/109951164154280311.jpg?param=200y50
+        // console.log('我是play', this.currentPlay.al.picUrl)
+      }, 1000)
     }
   },
   computed: {
-    ...mapState(['playId']),
+    ...mapState(['playId', 'currentPlay']),
+    ...mapGetters(['Cover']),
     icon () {
       if (this.isPlaying) {
         return 'el-icon-video-pause'
       } else {
         return 'el-icon-video-play'
       }
+    },
+    progress () {
+      if (this.playurl) {
+        const str = this.position / this.duration
+        return `${(str * 100).toFixed(2)}%`
+      } else {
+        return 0
+      }
     }
-
+    // 封面
+  },
+  created () {
+    clearInterval(this.timer)
+    this.timer = null
   }
-
 }
 
 </script>

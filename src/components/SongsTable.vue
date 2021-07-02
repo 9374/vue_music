@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 //  复用歌曲表格组件
 export default {
   // 需要引用者传入songslist歌单列表
@@ -73,11 +73,13 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getCurrentPlay']),
     // 从vuex中获取改变播放音乐id的方法
     ...mapMutations(['changePlayId']),
     // 点击改变播放音乐的id
     onPlay (palyid) {
       this.changePlayId(palyid)
+      this.getCurrentPlay(palyid)
     }
   }
 
