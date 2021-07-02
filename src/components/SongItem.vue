@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 export default {
   props: {
     // 歌名
@@ -40,12 +40,14 @@ export default {
   methods: {
     // 从vuex中获取改变正在播放的音乐id的方法
     ...mapMutations(['changePlayId']),
+    ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
     // 调用方法改变正在播放的歌曲
-    onPlay (palyid) {
-      this.changePlayId(palyid)
+    onPlay (playid) {
+      this.changePlayId(playid)
+      this.getCurrentPlay(playid)
+      this.getCurrentPlayLyric(playid)
     }
   }
-
 }
 
 </script>

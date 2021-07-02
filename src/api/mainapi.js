@@ -63,3 +63,12 @@ export const getCurrentPlayAPI = function (ids) {
     }
   })
 }
+// 获取歌词
+export const getCurrentPlayLyricAPI = function (id) {
+  return request({
+    url: '/lyric',
+    params: {
+      id
+    }
+  })
+}

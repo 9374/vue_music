@@ -73,13 +73,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCurrentPlay']),
+    ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
     // 从vuex中获取改变播放音乐id的方法
     ...mapMutations(['changePlayId']),
     // 点击改变播放音乐的id
-    onPlay (palyid) {
-      this.changePlayId(palyid)
-      this.getCurrentPlay(palyid)
+    onPlay (playid) {
+      this.changePlayId(playid)
+      this.getCurrentPlay(playid)
+      this.getCurrentPlayLyric(playid)
     }
   }
 

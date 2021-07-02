@@ -3,12 +3,7 @@
     <el-row>
       <el-col :span="20">
         <div class="song">
-          <Play></Play></div
-      ></el-col>
-      <el-col :span="1">
-        <!-- 操作面板 -->
-        <div class="play">
-          <!--  -->
+          <Play></Play>
         </div>
       </el-col>
       <el-col :span="1">

@@ -56,16 +56,27 @@
       ></el-col
     >
     <el-col :span="12">
+      <div v-if="newLyric" class="lyric">
+        <p
+          v-for="(item, i) in newLyric"
+          :key="i"
+          v-show="parseInt(position) - item.time <= 4"
+          class="content"
+        >
+          {{ item.text }}
+        </p>
+      </div></el-col
+    >
+    <el-col :span="0">
       <audio
         ref="audio"
+        @timeupdate="onupdate"
         @canplay="getDuration"
         @play="play"
         @pause="pause"
-        controls
         :src="playurl"
         preload="metadata"
         autoplay
-        metadata
         @ended="end"
       ></audio
     ></el-col>
@@ -77,6 +88,8 @@ import { mapMutations, mapState, mapGetters } from 'vuex'
 export default {
   data () {
     return {
+      contentText: '',
+      newLyric: [],
       playurl: '',
       name: '123',
       isPlaying: false,
@@ -89,20 +102,16 @@ export default {
       // 进度条 定义在计算属性
       // progress: 0,
       playSong: {},
-      timer: null
+      timer: null,
+      timer1: null
     }
   },
   watch: {
     playId (newval) {
       this.changeUrl()
       this.getCover()
-    },
-    playurl () {
-      if (!this.playurl) {
-        clearInterval(this.timer)
-        this.timer = null
-      }
     }
+
   },
   methods: {
     ...mapMutations(['changePlayId']),
@@ -110,6 +119,7 @@ export default {
     changeUrl () {
       this.playurl = `https://music.163.com/song/media/outer/url?id=${this.playId}.mp3`
       this.getCover()
+      this.changeLyric()
     },
     // 歌曲加载完成自动获取总时长
     getDuration () {
@@ -118,16 +128,22 @@ export default {
     // 当音乐开始播放
     play () {
       this.isPlaying = true
-      this.timer = setInterval(() => {
-        this.position = this.$refs.audio.currentTime
-      }, 1000)
     },
     // 音乐暂停
     pause () {
       this.isPlaying = false
-      clearInterval(this.timer)
-      this.timer = null
     },
+    onupdate () {
+      this.position = this.$refs.audio.currentTime
+      console.log(parseInt(this.position))
+      if (this.timer1) {
+        return
+      }
+      this.timer1 = setTimeout(() => {
+        this.timer1 = null
+      }, 500)
+    },
+
     // 点击播放按钮
     onplay () {
       if (this.isPlaying === false) {
@@ -142,6 +158,38 @@ export default {
       clearInterval(this.timer)
       this.timer = null
       console.log('结束播放')
+    },
+    // 处理歌词
+    changeLyric () {
+      setTimeout(() => {
+        if (this.lyric) {
+          const arr = this.lyric.split('[')
+          // console.log(arr)
+          const newarr = []
+          const arr2 = []
+          arr.forEach(item => {
+            newarr.push(item.split(']'))
+          })
+          console.log(newarr)
+          newarr.forEach((item, i) => {
+            console.log(item)
+            const obj = {
+              time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
+              text: item[1]
+            }
+            // console.log(item[0].split('.')[0].split(':')[0] * 60)
+            // // console.log(item[0].split('.')[0].split(':')[0])
+            // console.log(item[0].split('.')[0].split(':')[1] * 1)
+            // newarr[i] = item[0].split('.')[0].split(':')
+            arr2.push(obj)
+          })
+          this.newLyric = arr2
+          console.log(arr2)
+          this.newLyric.forEach(item => {
+            console.log(item[0], item[1])
+          })
+        }
+      }, 1000)
     },
     // 过滤器
     s_to_hs (s) {
@@ -170,7 +218,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['playId', 'currentPlay']),
+    ...mapState(['playId', 'currentPlay', 'lyric']),
     ...mapGetters(['Cover']),
     // 计算当前播放按钮的图表
     icon () {
@@ -189,16 +237,18 @@ export default {
         return 0
       }
     }
-  },
-  created () {
-    clearInterval(this.timer)
-    this.timer = null
   }
 }
 
 </script>
 
 <style lang="less" scoped>
+.lyric {
+  padding: 10px;
+  // height: 20px;
+  color: red;
+  overflow: hidden;
+}
 .player {
   position: relative;
   display: flex;
