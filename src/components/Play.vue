@@ -24,9 +24,9 @@
               <!-- 下一曲-->
               <i class="el-icon-arrow-left" />
             </div>
-            <div class="control_btn">
+            <div class="control_btn" @click="onplay">
               <!-- 播放按钮 -->
-              <i @click="play" :class="icon"> </i>
+              <i :class="icon"> </i>
               <!-- <span class="play-btn" /> -->
             </div>
             <!--    上一曲 -->
@@ -59,9 +59,13 @@
       <audio
         ref="audio"
         @canplay="getDuration"
+        @play="play"
+        @pause="pause"
         controls
         :src="playurl"
+        preload="metadata"
         autoplay
+        metadata
         @ended="end"
       ></audio
     ></el-col>
@@ -91,7 +95,6 @@ export default {
   watch: {
     playId (newval) {
       this.changeUrl()
-      this.isPlaying = true
       this.getCover()
     },
     playurl () {
@@ -102,43 +105,45 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['changePlayId']),
+    // 当播放歌曲改变时
     changeUrl () {
       this.playurl = `https://music.163.com/song/media/outer/url?id=${this.playId}.mp3`
-      // 更新播放进度事件
-      clearInterval(this.timer)
-      this.timer = null
-      this.timer = setInterval(() => {
-        this.position = this.$refs.audio.currentTime
-      }, 1000)
       this.getCover()
     },
+    // 歌曲加载完成自动获取总时长
     getDuration () {
       this.duration = this.$refs.audio.duration
     },
-    ...mapMutations(['changePlayId']),
+    // 当音乐开始播放
     play () {
-      if (this.isPlaying) {
-        console.log(this.$refs.audio)
-        // console.log()
-        this.$refs.audio.pause()
-        // 更新播放进度事件
-        clearInterval(this.timer)
-        this.timer = null
-      } else {
-        this.$refs.audio.play()
-        // 更新播放进度事件
-        clearInterval(this.timer)
-        this.timer = null
-        this.timer = setInterval(() => {
-          this.position = this.$refs.audio.currentTime
-        }, 1000)
-      }
-      this.isPlaying = !this.isPlaying
+      this.isPlaying = true
+      this.timer = setInterval(() => {
+        this.position = this.$refs.audio.currentTime
+      }, 1000)
     },
-    end () {
+    // 音乐暂停
+    pause () {
+      this.isPlaying = false
       clearInterval(this.timer)
       this.timer = null
     },
+    // 点击播放按钮
+    onplay () {
+      if (this.isPlaying === false) {
+        this.$refs.audio.play()
+      } else {
+        this.$refs.audio.pause()
+      }
+    },
+    // 音乐播放完毕
+    end () {
+      this.isPlaying = false
+      clearInterval(this.timer)
+      this.timer = null
+      console.log('结束播放')
+    },
+    // 过滤器
     s_to_hs (s) {
       // 计算分钟
       // 算法：将秒数除以60，然后下舍入，既得到分钟数
@@ -159,16 +164,15 @@ export default {
     // 更新封面
     getCover () {
       setTimeout(() => {
-        // console.log('我是play', this.currentPlay)
+        // 获取封面图片
         this.coverUrl = this.currentPlay.al.picUrl + '?param=200y200'
-        // http://p4.music.126.net/JzNK4a5PjjPIXAgVlqEc5Q==/109951164154280311.jpg?param=200y50
-        // console.log('我是play', this.currentPlay.al.picUrl)
       }, 1000)
     }
   },
   computed: {
     ...mapState(['playId', 'currentPlay']),
     ...mapGetters(['Cover']),
+    // 计算当前播放按钮的图表
     icon () {
       if (this.isPlaying) {
         return 'el-icon-video-pause'
@@ -176,6 +180,7 @@ export default {
         return 'el-icon-video-play'
       }
     },
+    // 计算进度条长度
     progress () {
       if (this.playurl) {
         const str = this.position / this.duration
@@ -184,7 +189,6 @@ export default {
         return 0
       }
     }
-    // 封面
   },
   created () {
     clearInterval(this.timer)
