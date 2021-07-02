@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Songs from '@/views/songs.vue'
+// import Songs from '@/views/songs.vue'
 import Main from '@/views/Main/Main.vue'
 import Found from '@/views/Main/Found/Found.vue'
 import SongsList from '@/views/Main/SongsList.vue'
@@ -8,15 +8,13 @@ import Home from '@/views/Home.vue'
 import AllSongsList from '@/views/Main/Found/AllSongsLust.vue'
 import NewMusiclist from '@/views/Main/Found/NewMusiclist.vue'
 import SearchList from '@/views/Main/Found/SearchList/SearchList.vue'
+import Play from '@/components/Play.vue'
 // import test from '@/views/test.vue'
 Vue.use(VueRouter)
 
 const routes = [
   // 重定向至首页
-  {
-    path: '/',
-    redirect: '/home'
-  },
+  { path: '/', redirect: '/home' },
   // 首页
   {
     path: '/home',
@@ -44,8 +42,8 @@ const routes = [
   },
   // 正在播放
   {
-    path: '/songs',
-    component: Songs
+    path: '/play',
+    component: Play
   }
 
 ]

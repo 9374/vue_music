@@ -50,10 +50,14 @@
 </template>
 
 <script>
+//  引入歌单表格组件进行复用
 import SongsTable from '@/components/SongsTable.vue'
+// 引入vuex中的方法
 import { mapMutations } from 'vuex'
+// 引入获取歌单信息的接口
 import { GetSongsListAPI } from '@/api/mainapi'
 export default {
+  // 监听id变化重新发送请求获取最新歌单，清空原歌单数据
   watch: {
     id () {
       this.seeSongsList = null
@@ -71,8 +75,10 @@ export default {
       seeSongsList: null
     }
   },
+  // 接受父组件传送的id
   props: ['id'],
   methods: {
+    // 改变正在播放的歌曲id
     ...mapMutations(['changePlayId']),
     // 获取歌单列表的函数
     async getSongsList () {
@@ -84,11 +90,13 @@ export default {
         // console.log(this.seeSongsList)
       }
     },
+    // 点击按钮播放id音乐
     onPlay (palyid) {
       this.changePlayId(palyid)
     }
 
   },
+  // 注册歌单表格组件准备复用
   components: {
     SongsTable
   }

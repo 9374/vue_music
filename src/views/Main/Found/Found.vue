@@ -1,6 +1,7 @@
 <template>
   <div>
     <!--           @click.native="getSongsList(item.id)" -->
+    <!-- 发现音乐组件 -->
     <p class="title">推荐歌单</p>
     <el-row type="flex" :gutter="40" align="top" justify="space-around">
       <el-col :span="4" v-for="item in list" :key="item.id" class="card">
@@ -34,8 +35,11 @@ import { GetFound } from '../../../api/mainapi'
 export default {
   data () {
     return {
+      // 图片显示模式
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
+      // 默认图片地址
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      // 歌单列表
       list: []
     }
   },
@@ -44,6 +48,7 @@ export default {
   },
   methods: {
     // ...mapMutations(['changeSeeSongsList']),
+    // 获取发现音乐组件歌单列表 获取12个
     async getFoundlist () {
       const { data: { result } } = await GetFound(12)
       // console.log(result)

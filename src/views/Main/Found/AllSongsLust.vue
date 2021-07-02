@@ -25,7 +25,7 @@ export default {
   },
   data () {
     return {
-      // 所有音乐的结果
+      // 所有音乐歌单的结果
       AllSongslist: [],
       // 每页个数;
       pageSize: 24,

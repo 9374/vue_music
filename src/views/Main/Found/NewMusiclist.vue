@@ -14,13 +14,14 @@ export default {
   },
   data () {
     return {
-      SongList: [],
-      newarr: []
+      // 获得的歌曲列表
+      SongList: []
     }
   },
   methods: {
+    // 获取最新音乐
     async getNewSong () {
-      const { data: res } = await GetnewSongAPI(100)
+      const { data: res } = await GetnewSongAPI(30)
       if (res.code === 200) {
         console.log('最新音乐获取成功')
         this.SongList = res.result
@@ -28,6 +29,7 @@ export default {
     }
   },
   created () {
+    // 页面加载获取最新音乐
     this.getNewSong()
   }
 }

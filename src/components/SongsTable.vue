@@ -3,6 +3,7 @@
     <template>
       <el-table :data="SongsList" stripe style="width: 100%">
         <el-table-column prop="name" label="音乐标题"> </el-table-column>
+        <!-- 通过父组件川参判断是什么歌单类型 改变获取数据的路径 -->
         <el-table-column
           v-if="status === 'search'"
           prop="artists[0].name"
@@ -59,6 +60,7 @@ export default {
       required: true,
       default: () => []
     },
+    // 父组件传入歌单类型，从而获取不同歌单类型的信息
     status: {
       type: String,
       required: true
@@ -71,7 +73,9 @@ export default {
     }
   },
   methods: {
+    // 从vuex中获取改变播放音乐id的方法
     ...mapMutations(['changePlayId']),
+    // 点击改变播放音乐的id
     onPlay (palyid) {
       this.changePlayId(palyid)
     }
