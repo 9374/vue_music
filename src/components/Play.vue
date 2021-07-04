@@ -14,14 +14,15 @@
                 backgroundImage: coverUrl ? `url(${coverUrl})` : '',
               }"
             />
+            <!-- <img src="@/assets/cover.jpg" alt=""> -->
             <!-- backgroundImage: coverUrl ? `url(${coverUrl})` : '', -->
           </div>
         </div>
         <!-- 控制部分 -->
         <div class="player_control">
           <div class="control" :class="{ control__playing: isPlaying }">
-            <div class="control_btn control_btn__side">
-              <!-- 下一曲-->
+            <div @click="prev" class="control_btn control_btn__side">
+              <!-- 上一曲-->
               <i class="el-icon-arrow-left" />
             </div>
             <div class="control_btn" @click="onplay">
@@ -29,8 +30,8 @@
               <i :class="icon"> </i>
               <!-- <span class="play-btn" /> -->
             </div>
-            <!--    上一曲 -->
-            <div class="control_btn control_btn__side">
+            <!--    下一曲 -->
+            <div @click="next" class="control_btn control_btn__side">
               <i class="el-icon-arrow-right" />
             </div>
           </div>
@@ -39,7 +40,9 @@
         <div class="player_progress">
           <div class="progress" :class="{ progress__playing: isPlaying }">
             <!-- 歌曲名称 -->
-            <h2 class="progress_title">{{ currentPlay.name }}</h2>
+            <h2 class="progress_title">
+              {{ playId ? currentPlay.name : "暂无播放歌曲" }}
+            </h2>
             <!-- 歌曲时间 -->
             <p class="progress_text">
               {{ s_to_hs(position) }} /
@@ -55,10 +58,11 @@
       </div>
       ></el-col
     >
-    <el-col :span="12">
+    <el-col :span="9">
       <div v-if="newLyric" class="lyric">
         <p
           v-for="(item, i) in newLyric"
+          :id="item.time"
           :key="i"
           v-show="parseInt(position) - item.time <= 4"
           class="content"
@@ -74,7 +78,7 @@
         @canplay="getDuration"
         @play="play"
         @pause="pause"
-        :src="playurl"
+        :src="playUrl"
         preload="metadata"
         autoplay
         @ended="end"
@@ -84,17 +88,16 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapGetters } from 'vuex'
+import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
   data () {
     return {
       contentText: '',
       newLyric: [],
-      playurl: '',
-      name: '123',
+      // playurl: '',
       isPlaying: false,
       stopMatrix: 0,
-      coverUrl: '',
+      // coverUrl: '',
       // 当前时间
       position: 0,
       // 总时间
@@ -104,23 +107,40 @@ export default {
       playSong: {},
       timer: null,
       timer1: null
+
     }
   },
   watch: {
     playId (newval) {
-      this.changeUrl()
-      this.getCover()
+      console.log('当前id', newval)
+      console.log(this.playUrl)
+      // 改变当前播放的id
+      this.changePlayId(newval)
+      // 获取封面
+      // this.getCover()
+      // 获取当前播放歌曲的详情
+      this.getCurrentPlay(newval)
+      // 获取当前播放歌曲的歌词
+      this.getCurrentPlayLyric(newval)
+      this.changeLyric()
     }
-
   },
   methods: {
-    ...mapMutations(['changePlayId']),
-    // 当播放歌曲改变时
-    changeUrl () {
-      this.playurl = `https://music.163.com/song/media/outer/url?id=${this.playId}.mp3`
-      this.getCover()
-      this.changeLyric()
+    ...mapMutations(['changePlayId', 'playNextSong', 'playPrevSong']),
+    ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
+    next () {
+      this.playNextSong(this.playId)
+      console.log('当前播放id', this.playId, '点击下一首')
     },
+    prev () {
+      this.playPrevSong(this.playId)
+      console.log('当前播放id', this.playId, '点击上一首')
+    },
+    // changeUrl () {
+    //   this.playurl = `https://music.163.com/song/media/outer/url?id=${this.playId}.mp3`
+    //   this.getCover()
+    //   this.changeLyric()
+    // },
     // 歌曲加载完成自动获取总时长
     getDuration () {
       this.duration = this.$refs.audio.duration
@@ -133,17 +153,17 @@ export default {
     pause () {
       this.isPlaying = false
     },
+    // 歌曲进度更新时
     onupdate () {
-      this.position = this.$refs.audio.currentTime
-      console.log(parseInt(this.position))
+      // console.log(parseInt(this.position))
       if (this.timer1) {
         return
       }
       this.timer1 = setTimeout(() => {
+        this.position = this.$refs.audio.currentTime
         this.timer1 = null
       }, 500)
     },
-
     // 点击播放按钮
     onplay () {
       if (this.isPlaying === false) {
@@ -155,14 +175,14 @@ export default {
     // 音乐播放完毕
     end () {
       this.isPlaying = false
-      clearInterval(this.timer)
-      this.timer = null
       console.log('结束播放')
+      this.$store.commit('playNextSong', this.playId)
     },
     // 处理歌词
     changeLyric () {
       setTimeout(() => {
         if (this.lyric) {
+          console.log('开始处理歌词')
           const arr = this.lyric.split('[')
           // console.log(arr)
           const newarr = []
@@ -170,10 +190,12 @@ export default {
           arr.forEach(item => {
             newarr.push(item.split(']'))
           })
-          console.log(newarr)
+          // console.log(newarr)
           newarr.forEach((item, i) => {
-            console.log(item)
+            // console.log(item)
             const obj = {
+              // 逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
+              // 10*60 +20
               time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
               text: item[1]
             }
@@ -184,10 +206,7 @@ export default {
             arr2.push(obj)
           })
           this.newLyric = arr2
-          console.log(arr2)
-          this.newLyric.forEach(item => {
-            console.log(item[0], item[1])
-          })
+          // console.log(arr2)
         }
       }, 1000)
     },
@@ -208,18 +227,20 @@ export default {
       s = (s.length === 1) ? '0' + s : s
       // s = s.substring(0, 2)
       return h + ':' + s
-    },
-    // 更新封面
-    getCover () {
-      setTimeout(() => {
-        // 获取封面图片
-        this.coverUrl = this.currentPlay.al.picUrl + '?param=200y200'
-      }, 1000)
     }
+    // 更新封面
+    // getCover () {
+    //   setTimeout(() => {
+    //     // 获取封面图片
+    //     this.coverUrl = this.currentPlay.al.picUrl + '?param=200y200'
+    //   }, 1000)
+    // }
+    // 关闭侧栏
+
   },
   computed: {
-    ...mapState(['playId', 'currentPlay', 'lyric']),
-    ...mapGetters(['Cover']),
+    ...mapState(['playId', 'currentPlay', 'lyric', 'playList']),
+    ...mapGetters(['playUrl', 'coverUrl']),
     // 计算当前播放按钮的图表
     icon () {
       if (this.isPlaying) {
@@ -230,7 +251,7 @@ export default {
     },
     // 计算进度条长度
     progress () {
-      if (this.playurl) {
+      if (this.playUrl) {
         const str = this.position / this.duration
         return `${(str * 100).toFixed(2)}%`
       } else {
@@ -244,6 +265,7 @@ export default {
 
 <style lang="less" scoped>
 .lyric {
+  height: 10vh;
   padding: 10px;
   // height: 20px;
   color: red;
