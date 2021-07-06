@@ -8,6 +8,14 @@
         style="width: 100%"
         :row-class-name="tableRowClassName"
       >
+        <el-table-column width="40">
+          <template #default="{ row }">
+            <i
+              :class="isPlaying ? 'el-icon-loading' : 'el-icon-caret-right'"
+              v-show="row.id === playId"
+            ></i>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="音乐标题"> </el-table-column>
         <!-- 通过父组件川参判断是什么歌单类型 改变获取数据的路径 -->
         <el-table-column
@@ -50,6 +58,11 @@
             <el-button type="success" disabled round>添加到歌单</el-button>
           </template>
         </el-table-column>
+        <el-table-column v-if="!btn" width="40">
+          <template #default="{ row }">
+            <i class="el-icon-delete" @click.stop="delOneSong(row.id)"></i>
+          </template>
+        </el-table-column>
       </el-table>
     </template>
   </div>
@@ -84,7 +97,7 @@ export default {
   methods: {
     ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
     // 从vuex中获取改变播放音乐id的方法
-    ...mapMutations(['changePlayId', 'addPlayList']),
+    ...mapMutations(['changePlayId', 'addPlayList', 'delOneSong']),
     // 点击改变播放音乐的id
     onPlay (playid) {
       console.log('我要播放', playid)
@@ -109,7 +122,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['playId', 'playList'])
+    ...mapState(['playId', 'playList', 'isPlaying'])
     // currentRow () {
     //   this.playList.forEach((item, i) => {
     //     if (item.id === this.playId) {
@@ -124,6 +137,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.playing {
+  display: block;
+}
 .el-icon-video-play {
   margin-right: 7px;
 }
@@ -132,6 +148,7 @@ export default {
 }
 
 /deep/ .el-table .success-row {
-  background: #f0f9eb;
+  color: #ec4141;
+  // background: #f0f9eb;
 }
 </style>

@@ -82,6 +82,7 @@
         preload="metadata"
         autoplay
         @ended="end"
+        :loop="isLoop"
       ></audio
     ></el-col>
   </el-row>
@@ -95,7 +96,6 @@ export default {
       contentText: '',
       newLyric: [],
       // playurl: '',
-      isPlaying: false,
       stopMatrix: 0,
       // coverUrl: '',
       // 当前时间
@@ -126,7 +126,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['changePlayId', 'playNextSong', 'playPrevSong']),
+    ...mapMutations(['changePlayId', 'playNextSong', 'playPrevSong', 'changePlayState']),
     ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
     next () {
       this.playNextSong(this.playId)
@@ -147,11 +147,11 @@ export default {
     },
     // 当音乐开始播放
     play () {
-      this.isPlaying = true
+      this.changePlayState(true)
     },
     // 音乐暂停
     pause () {
-      this.isPlaying = false
+      this.changePlayState(false)
     },
     // 歌曲进度更新时
     onupdate () {
@@ -174,7 +174,8 @@ export default {
     },
     // 音乐播放完毕
     end () {
-      this.isPlaying = false
+      this.changePlayState(false)
+      // this.isPlaying = false
       console.log('结束播放')
       this.$store.commit('playNextSong', this.playId)
     },
@@ -239,7 +240,7 @@ export default {
 
   },
   computed: {
-    ...mapState(['playId', 'currentPlay', 'lyric', 'playList']),
+    ...mapState(['playId', 'currentPlay', 'lyric', 'playList', 'isPlaying', 'isLoop']),
     ...mapGetters(['playUrl', 'coverUrl']),
     // 计算当前播放按钮的图表
     icon () {

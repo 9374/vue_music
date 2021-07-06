@@ -13,7 +13,7 @@
           <el-image
             :lazy="true"
             class="image"
-            :src="item.picUrl"
+            :src="item.picUrl + '?param=400y400'"
             :fit="fits[2]"
           ></el-image>
           <div style="padding: 14px">

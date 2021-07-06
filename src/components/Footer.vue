@@ -1,13 +1,19 @@
 <template>
   <el-footer class="footer" style="width: 100vw">
     <el-row>
-      <el-col :span="23">
+      <el-col :span="20">
         <div class="song">
           <Play></Play>
         </div>
       </el-col>
-      <el-col :span="1">
+      <el-col :span="4">
         <div class="menu">
+          <i
+            @click="changeLoop()"
+            :class="isLoop ? 'el-icon-refresh' : 'el-icon-refresh-right'"
+            style="margin-right: 5px"
+          ></i>
+
           <i class="el-icon-s-fold" @click="drawer = !drawer"></i>
         </div>
       </el-col>
@@ -22,7 +28,27 @@
         :direction="direction"
         :before-close="handleClose"
       >
-        <SongsTable :SongsList="playList" status="list" :btn="false" />
+        <el-card class="box-card">
+          <div slot="header" class="clearfix"></div>
+
+          <template #header class="clearfix">
+            <h3>正在播放</h3>
+            <div class="info" style="display: flex">
+              <div>
+                <span style="clolor: #ccc">共{{ playList.length }}首</span>
+              </div>
+              <div class="btn">
+                <el-button type="primary" round disabled
+                  ><i class="el-icon-folder-add"></i> 收藏全部</el-button
+                >
+                <el-button type="info" round @click="clearPlayList()"
+                  >清空列表</el-button
+                >
+              </div>
+            </div>
+          </template>
+          <SongsTable :SongsList="playList" status="list" :btn="false" />
+        </el-card>
       </el-drawer>
     </el-row>
   </el-footer>
@@ -44,15 +70,21 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['changePlayId']),
+    ...mapMutations(['changePlayId', 'clearPlayList', 'changeLoopState']),
     handleClose (done) {
       done()
+    },
+    changeLoop () {
+      this.changeLoopState(!this.isLoop)
+      this.$message({
+        message: this.isLoop ? '切换为单曲循环' : '切换为列表循环',
+        type: 'success'
+      })
     }
   },
   computed: {
-    ...mapState(['playList'])
+    ...mapState(['playList', 'isLoop'])
   },
-
   name: 'Footer'
 
 }
@@ -76,4 +108,29 @@ export default {
     background-color: #fff;
   }
 }
+//
+.text {
+  font-size: 14px;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both;
+}
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+// .box-card {
+//   width: 480px;
+// }
 </style>

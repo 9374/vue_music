@@ -5,18 +5,36 @@ import { getCurrentPlayAPI, getCurrentPlayLyricAPI } from '@/api/mainapi.js'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: JSON.parse(localStorage.getItem('music_state')) || {
+    // 当前播放歌曲id
     playId: 0,
+    // 播放列表·
     playList: [],
+    // 当前播放对象
     currentPlay: null,
     // coverUrl: '',
-    lyric: ''
+    // 歌词
+    lyric: '',
+    // 当前播放序列
+    currentIndex: '',
+    // 当前播放状态
+    isPlaying: false,
+    // 是否单曲循环
+    isLoop: false
   },
   mutations: {
+    changeLoopState (state, payload) {
+      state.isLoop = payload
+
+      localStorage.setItem('music_state', JSON.stringify(state))
+    },
     // 改变正在播放的音乐
     changePlayId (state, payload) {
       console.log('我改变了id', payload)
       state.playId = payload
       localStorage.setItem('music_state', JSON.stringify(state))
+    },
+    changePlayState (state, payload) {
+      state.isPlaying = payload
     },
     // 给播放列表添加
     addPlayList (state, payload) {
@@ -50,30 +68,52 @@ const store = new Vuex.Store({
     },
     // 下一曲
     playNextSong (state, payload) {
-      // console.log('下一首', this, payload)
-      state.playList.forEach((item, i) => {
-        if (item.id === payload) {
-          if (i + 1 >= state.playList.length) {
+      // 判断歌单长度
+      if (state.playList.length >= 1) {
+        // console.log('下一首', this, payload)
+        // 正常播放
+        state.playList.forEach((item, i) => {
+          if (item.id === payload) {
+            if (i + 1 >= state.playList.length) {
+              this.commit('changePlayId', state.playList[0].id)
+              state.currentIndex = state.playList[0].id
+            } else {
+              this.commit('changePlayId', state.playList[i + 1].id)
+              state.currentIndex = state.playList[i + 1].id
+            }
+          }
+        })
+        // 如果当前播放的歌曲不存在
+        if (state.playList.every(item => item.id !== payload)) {
+          if (state.currentIndex + 1 >= state.playList.length) {
             this.commit('changePlayId', state.playList[0].id)
           } else {
-            this.commit('changePlayId', state.playList[i + 1].id)
+            this.commit('changePlayId', state.playList[state.currentIndex + 1].id)
           }
         }
-      })
+      }
     },
     // 上一首
     playPrevSong (state, payload) {
-      // console.log('上一首', this, payload)
-      state.playList.forEach((item, i) => {
-        if (item.id === payload) {
-          if (i - 1 < 0) {
-            console.log(state.playList.length - 1)
-            this.commit('changePlayId', state.playList[state.playList.length - 1].id)
-          } else {
-            this.commit('changePlayId', state.playList[i - 1].id)
+      if (state.playList.length >= 1) {
+        // console.log('上一首', this, payload)
+        state.playList.forEach((item, i) => {
+          if (item.id === payload) {
+            if (i - 1 < 0) {
+              console.log(state.playList.length - 1)
+              this.commit('changePlayId', state.playList[state.playList.length - 1].id)
+            } else {
+              this.commit('changePlayId', state.playList[i - 1].id)
+            }
           }
-        }
-      })
+        })
+      }
+    },
+    // 从当前播放列表删除一首歌;
+    delOneSong (state, payload) {
+      console.log('123', payload)
+      state.playList = state.playList.filter(item => item.id !== payload)
+      console.log(state.playList)
     }
   },
   actions: {

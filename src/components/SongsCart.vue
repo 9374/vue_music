@@ -15,7 +15,11 @@
           <el-image
             :lazy="true"
             class="image"
-            :src="item.picUrl || item.coverImgUrl"
+            :src="
+              item.picUrl
+                ? item.picUrl + '?param=400y400'
+                : item.coverImgUrl + '?param=400y400'
+            "
             :fit="fits[2]"
           ></el-image>
           <div style="padding: 14px">

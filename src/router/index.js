@@ -1,14 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 // import Songs from '@/views/songs.vue'
-import Main from '@/views/Main/Main.vue'
-import Found from '@/views/Main/Found/Found.vue'
-import SongsList from '@/views/Main/SongsList.vue'
-import Home from '@/views/Home.vue'
-import AllSongsList from '@/views/Main/Found/AllSongsLust.vue'
-import NewMusiclist from '@/views/Main/Found/NewMusiclist.vue'
-import SearchList from '@/views/Main/Found/SearchList/SearchList.vue'
-import Play from '@/components/Play.vue'
+const Main = () => import('@/views/Main/Main.vue')
+// import Main from '@/views/Main/Main.vue'
+const Found = () => import('@/views/Main/Found/Found.vue')
+// import Found from '@/views/Main/Found/Found.vue'
+const SongsList = () => import('@/views/Main/SongsList.vue')
+// import SongsList from '@/views/Main/SongsList.vue'
+const Home = () => import('@/views/Home.vue')
+// import Home from '@/views/Home.vue'
+const AllSongsList = () => import('@/views/Main/Found/AllSongsLust.vue')
+// import AllSongsList from '@/views/Main/Found/AllSongsLust.vue'
+const NewMusiclist = () => import('@/views/Main/Found/NewMusiclist.vue')
+// import NewMusiclist from '@/views/Main/Found/NewMusiclist.vue'
+const SearchList = () => import('@/views/Main/Found/SearchList/SearchList.vue')
+// import SearchList from '@/views/Main/Found/SearchList/SearchList.vue'
+const Play = () => import('@/components/Play.vue')
+// import Play from '@/components/Play.vue'
 // import test from '@/views/test.vue'
 Vue.use(VueRouter)
 

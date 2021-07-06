@@ -5,7 +5,9 @@
       <el-container>
         <Aside> </Aside>
         <el-main class="view" style="padding: 5px 20px">
-          <keep-alive> <router-view class="main"></router-view></keep-alive>
+          <keep-alive name>
+            <router-view class="main"></router-view
+          ></keep-alive>
         </el-main>
       </el-container>
       <Footer />
