@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { Message } from 'element-ui'
 import { getCurrentPlayAPI, getCurrentPlayLyricAPI } from '@/api/mainapi.js'
 
 Vue.use(Vuex)
@@ -22,9 +23,9 @@ const store = new Vuex.Store({
     isLoop: false
   },
   mutations: {
+    // 改变单曲循环状态
     changeLoopState (state, payload) {
       state.isLoop = payload
-
       localStorage.setItem('music_state', JSON.stringify(state))
     },
     // 改变正在播放的音乐
@@ -33,6 +34,7 @@ const store = new Vuex.Store({
       state.playId = payload
       localStorage.setItem('music_state', JSON.stringify(state))
     },
+    // 改变播放状态
     changePlayState (state, payload) {
       state.isPlaying = payload
     },
@@ -51,6 +53,7 @@ const store = new Vuex.Store({
     // 清空播放列表
     clearPlayList (state) {
       state.playList = []
+      Message.success('清空播放列表成功')
       localStorage.setItem('music_state', JSON.stringify(state))
     },
     // 改变currentPlay
@@ -111,7 +114,7 @@ const store = new Vuex.Store({
     },
     // 从当前播放列表删除一首歌;
     delOneSong (state, payload) {
-      console.log('123', payload)
+      Message.success('移除歌曲成功')
       state.playList = state.playList.filter(item => item.id !== payload)
       console.log(state.playList)
     }
