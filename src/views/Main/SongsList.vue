@@ -21,8 +21,10 @@
         </p>
         <p class="description">简介:{{ seeSongsList.description }}</p>
         <div class="btn">
-          <el-button type="primary" disabled round>播放全部(未)</el-button>
-          <el-button type="primary" disabled round>收藏(未)</el-button>
+          <el-button type="primary" @click="addAlltoList" round
+            >播放全部</el-button
+          >
+          <el-button type="primary" disabled round>收藏</el-button>
         </div>
       </div>
     </div>
@@ -79,13 +81,14 @@ export default {
   props: ['id'],
   methods: {
     // 改变正在播放的歌曲id
-    ...mapMutations(['changePlayId']),
+    ...mapMutations(['changePlayId', 'addPlayList', 'clearPlayList']),
     // 获取歌单列表的函数
     async getSongsList () {
       const { data: res } = await GetSongsListAPI(this.id)
       // console.log(res)
       if (res.code === 200) {
         // console.log(res)
+        console.log('歌单列表', res.playlist)
         this.seeSongsList = res.playlist
         // console.log(this.seeSongsList)
       }
@@ -93,6 +96,18 @@ export default {
     // 点击按钮播放id音乐
     onPlay (palyid) {
       this.changePlayId(palyid)
+    },
+    addAlltoList () {
+      this.$confirm('全部播放替换掉当前播放歌单', '提示').then(() => {
+        this.changePlayId(this.seeSongsList.tracks[0].id)
+        this.clearPlayList()
+        this.seeSongsList.tracks.forEach(item => {
+          console.log('全部播放', item)
+          this.addPlayList(item)
+        })
+      }).catch(() => {
+
+      })
     }
 
   },

@@ -58,7 +58,7 @@
       </div>
       ></el-col
     >
-    <el-col :span="9">
+    <el-col :span="12">
       <div v-if="newLyric" class="lyric">
         <p
           v-for="(item, i) in newLyric"
@@ -128,10 +128,12 @@ export default {
   methods: {
     ...mapMutations(['changePlayId', 'playNextSong', 'playPrevSong', 'changePlayState']),
     ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
+    // 下一首
     next () {
       this.playNextSong(this.playId)
       console.log('当前播放id', this.playId, '点击下一首')
     },
+    // 上一首
     prev () {
       this.playPrevSong(this.playId)
       console.log('当前播放id', this.playId, '点击上一首')
@@ -148,6 +150,10 @@ export default {
     // 当音乐开始播放
     play () {
       this.changePlayState(true)
+      if (!this.newLyric) {
+        this.getCurrentPlayLyric(this.playId)
+      }
+      this.changeLyric()
     },
     // 音乐暂停
     pause () {
@@ -294,6 +300,7 @@ export default {
   padding-right: 12px;
 }
 .player_progress {
+  padding-bottom: 4px;
   position: absolute;
   left: 9px;
   right: 9px;
@@ -432,7 +439,8 @@ export default {
 .progress {
   padding-left: 123px;
   padding-right: 12px;
-  height: 100%;
+  padding-bottom: 4px;
+  // height: 100%;
   border-radius: 6px 6px 0 0;
   background-color: rgba(255, 255, 255, 0.5);
   transition: all 0.6s ease;

@@ -131,6 +131,15 @@ const store = new Vuex.Store({
         // this.coverUrl = res.songs[0].al.picUrl
       }
     },
+    async addToList (ctx, payload) {
+      const { data: res } = await getCurrentPlayAPI(payload)
+      if (res.code === 200) {
+        ctx.commit('addPlayList', res.songs[0])
+        console.log('添加至播放列表')
+        Message.success('添加到播放列表成功')
+        // state.addPlayList()
+      }
+    },
     async getCurrentPlayLyric (ctx, id) {
       console.log('获取歌词')
       const { data: res } = await getCurrentPlayLyricAPI(id)

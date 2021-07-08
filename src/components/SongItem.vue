@@ -44,8 +44,8 @@ export default {
     // 调用方法改变正在播放的歌曲
     onPlay (playid) {
       this.changePlayId(playid)
-      this.getCurrentPlay(playid)
-      this.getCurrentPlayLyric(playid)
+      // this.getCurrentPlay(playid)
+      // this.getCurrentPlayLyric(playid)
     }
   }
 }

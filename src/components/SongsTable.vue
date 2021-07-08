@@ -53,9 +53,11 @@
         <el-table-column v-if="btn" label="操作" width="300">
           <template #default="{ row }">
             <el-button type="primary" @click="onPlay(row.id)" round>
-              <i class="el-icon-video-play"></i>播放音乐
+              <i class="el-icon-video-play"></i>播放
             </el-button>
-            <el-button type="success" disabled round>添加到歌单</el-button>
+            <el-button type="success" @click="addToList(row.id)" round
+              >添加到列表</el-button
+            >
           </template>
         </el-table-column>
         <el-table-column v-if="!btn" width="40">
@@ -95,7 +97,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
+    ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric', 'addToList']),
     // 从vuex中获取改变播放音乐id的方法
     ...mapMutations(['changePlayId', 'addPlayList', 'delOneSong']),
     // 点击改变播放音乐的id

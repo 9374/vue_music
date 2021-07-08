@@ -13,7 +13,6 @@
             :class="isLoop ? 'el-icon-refresh' : 'el-icon-refresh-right'"
             style="margin-right: 5px"
           ></i>
-
           <i class="el-icon-s-fold" @click="drawer = !drawer"></i>
         </div>
       </el-col>
@@ -92,6 +91,7 @@ export default {
 
 <style lang="less" scoped>
 .menu {
+  justify-content: center;
   display: flex;
   align-items: center;
   height: 10vh;
