@@ -13,8 +13,8 @@ module.exports = {
   publicPath: './',
   chainWebpack: config => {
     config.plugin('html').tap(args => {
-      console.log(args)
       args[0].mode = process.env.NODE_ENV
+      console.log(args)
       return args
     })
   }
