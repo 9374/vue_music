@@ -60,14 +60,8 @@
     >
     <el-col :span="12">
       <div v-if="newLyric" class="lyric">
-        <p
-          v-for="(item, i) in newLyric"
-          :id="item.time"
-          :key="i"
-          v-show="parseInt(position) - item.time <= 4"
-          class="content"
-        >
-          {{ item.text }}
+        <p>
+          {{ currentLyric }}
         </p>
       </div></el-col
     >
@@ -106,8 +100,8 @@ export default {
       // progress: 0,
       playSong: {},
       timer: null,
-      timer1: null
-
+      timer1: null,
+      currentLyric: ''
     }
   },
   watch: {
@@ -122,7 +116,7 @@ export default {
       this.getCurrentPlay(newval)
       // 获取当前播放歌曲的歌词
       this.getCurrentPlayLyric(newval)
-      this.changeLyric()
+      // this.changeLyric()
     }
   },
   methods: {
@@ -161,14 +155,22 @@ export default {
     },
     // 歌曲进度更新时
     onupdate () {
-      // console.log(parseInt(this.position))
-      if (this.timer1) {
-        return
-      }
-      this.timer1 = setTimeout(() => {
+      if (this.$refs.audio.currentTime) {
         this.position = this.$refs.audio.currentTime
-        this.timer1 = null
-      }, 500)
+      }
+      // console.log(this.$refs.audio.currentTime)
+      if (this.newLyric[parseInt(this.position)]) {
+        this.currentLyric = this.newLyric[parseInt(this.position)]
+      }
+      // console.log(parseInt(this.position))
+
+      // if (this.timer1) {
+      //   return
+      // }
+      // this.timer1 = setTimeout(() => {
+
+      //   this.timer1 = null
+      // }, 500)
     },
     // 点击播放按钮
     onplay () {
@@ -193,26 +195,29 @@ export default {
           const arr = this.lyric.split('[')
           // console.log(arr)
           const newarr = []
-          const arr2 = []
+          // const arr2 = []
           arr.forEach(item => {
             newarr.push(item.split(']'))
           })
+          const obj2 = {}
           // console.log(newarr)
           newarr.forEach((item, i) => {
             // console.log(item)
-            const obj = {
-              // 逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
-              // 10*60 +20
-              time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
-              text: item[1]
-            }
+            // const obj = {
+            //   // 逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
+            //   // 10*60 +20
+            //   time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
+            //   text: item[1]
+            // }
+            obj2[item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1] = item[1]
             // console.log(item[0].split('.')[0].split(':')[0] * 60)
             // // console.log(item[0].split('.')[0].split(':')[0])
             // console.log(item[0].split('.')[0].split(':')[1] * 1)
             // newarr[i] = item[0].split('.')[0].split(':')
-            arr2.push(obj)
+            // arr2.push(obj)
           })
-          this.newLyric = arr2
+          // console.log(obj2)
+          this.newLyric = obj2
           // console.log(arr2)
         }
       }, 1000)

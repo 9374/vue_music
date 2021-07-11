@@ -1,5 +1,5 @@
 <template>
-  <el-footer class="footer" style="width: 100vw">
+  <el-footer class="footer" style="width: 100vw; padding: 0">
     <el-row>
       <el-col :span="20">
         <div class="song">

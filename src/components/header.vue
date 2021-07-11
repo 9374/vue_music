@@ -1,5 +1,40 @@
 <template>
-  <el-header class="head" style="width: 100vw">
+  <el-header class="head">
+    <el-row :gutter="20">
+      <el-col :span="12" :offset="0">
+        <el-input
+          v-popover:popover
+          size="small"
+          v-model="input"
+          placeholder="搜索音乐"
+          :style="{ width: '200px', borderRadius: '30px' }"
+        ></el-input>
+      </el-col>
+      <el-col :span="6" :offset="0" style="height: 60px"></el-col>
+      <el-col class="user" :span="6" :offset="0">
+        <div class="user_avatar">
+          <el-avatar
+            v-if="!isLogin"
+            @click.native="dialogFormVisible = true"
+            icon="el-icon-user-solid"
+          ></el-avatar>
+          <el-avatar
+            v-else
+            :src="
+              userInfo.avatarUrl + '?param=50y50' ||
+              'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+            "
+          ></el-avatar>
+        </div>
+        <div class="user_info">
+          <p v-show="!isLogin" @click="dialogFormVisible = true">未登录</p>
+          <p v-show="isLogin" v-popover:popoverUser>
+            {{ userInfo.nickname || "未登录" }}
+          </p>
+        </div>
+      </el-col>
+    </el-row>
+    <!-- 搜索预览 -->
     <el-popover
       ref="popover"
       placement="bottom-start"
@@ -48,31 +83,95 @@
         </div>
       </div>
     </el-popover>
-    <el-input
-      v-popover:popover
-      size="small"
-      span="12"
-      v-model="input"
-      placeholder="搜索音乐"
-      :style="{ width: '200px', borderRadius: '30px' }"
-    ></el-input>
-
-    <div serchlist></div>
+    <!-- 登录框 -->
+    <el-dialog
+      width="300px"
+      :append-to-body="true"
+      title="登录"
+      :visible.sync="dialogFormVisible"
+    >
+      <!-- 标签选择页 -->
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="手机帐号" name="phone"></el-tab-pane>
+        <el-tab-pane label="邮箱帐号" name="email"></el-tab-pane>
+        <el-tab-pane label="二维码" name="Qrkey"></el-tab-pane>
+      </el-tabs>
+      <div v-show="activeName === 'Qrkey'">
+        <p>暂未开发</p>
+        <img src="" alt="" />
+      </div>
+      <!-- 手机登录表单 -->
+      <el-form
+        v-show="activeName !== 'Qrkey'"
+        :model="form"
+        :rules="rules"
+        ref="ruleForm"
+      >
+        <el-form-item
+          prop="phone"
+          v-show="activeName === 'phone'"
+          label="手机号"
+        >
+          <el-input v-model="form.phone" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item
+          prop="email"
+          v-show="activeName === 'email'"
+          label="邮箱帐号"
+        >
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item prop="password" label="密码">
+          <el-input
+            type="password"
+            v-model="form.password"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="login">{{
+          activeName === "Qrkey" ? "确定" : "登录"
+        }}</el-button>
+      </div>
+    </el-dialog>
+    <!-- 个人详情框 退出 个人设置 -->
+    <el-popover
+      ref="popoverUser"
+      placement="bottom"
+      width="200"
+      trigger="click"
+    >
+      <div>
+        <el-button type="danger" round @click="loginOut">退出登录</el-button>
+      </div>
+    </el-popover>
   </el-header>
 </template>
 
 <script>
 // 获取搜索接口
+import { loginInPhone, loginInEmail, loginStatus, userSigninAPI, userLoginOut } from '@/api/userAPI.js'
 import { searchApi, hotSearchNameApi } from '../api/search'
 //  引入预览列表组件
 import SongItem from '../components/SongItem.vue'
+import { mapMutations, mapGetters, mapState } from 'vuex'
+const validateMobile = (rule, value, callback) => {
+  if (!/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(value)) {
+    callback(new Error('手机号码格式错误'))
+  } else {
+    callback()
+  }
+}
+const validateEamil = (rule, value, callback) => {
+  if (!/\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/.test(value)) {
+    callback(new Error('邮箱格式错误'))
+  } else {
+    callback()
+  }
+}
 export default {
-  watch: {
-    // 输入框值改变后调用获取搜索结果;
-    input (newval) {
-      this.getSearch()
-    }
-  },
   data () {
     return {
       // 输入框双向绑定的值
@@ -82,14 +181,44 @@ export default {
       // 延时器id 用来节流
       timer: null,
       // 热词列表
-      hotList: []
+      hotList: [],
+      // 个人详情退出按钮弹框
+      visible: false,
+      // 展示登录界面
+      dialogFormVisible: false,
+      // 当前展示页面
+      form: {
+        phone: '',
+        email: '',
+        password: ''
+      },
+      // 当前选择的登录页
+      activeName: 'phone',
+      // 校验规则
+      rules: {
+        phone: [
+          { required: true, trigger: 'blur', validator: validateMobile }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  watch: {
+    // 输入框值改变后调用获取搜索结果;
+    input (newval) {
+      this.getSearch()
     }
   },
   // 引入搜索预览组件
   components: {
     SongItem
+
   },
   methods: {
+    ...mapMutations(['initUserCookie', 'initUserInfo', 'clearUserInfo']),
     // 当用户停止输入后获取五个搜索结果储存展示
     getSearch () {
       clearTimeout(this.timer)
@@ -117,24 +246,124 @@ export default {
     delResult () {
       this.input = ''
       this.searchlist = []
+    },
+    // 登录事件
+    async login () {
+      if (this.activeName === 'phone') {
+        this.form.email = ''
+        this.form.password = encodeURIComponent(this.form.password)
+        const res = await loginInPhone(this.form)
+        console.log(res)
+        if (res.status === 200) {
+          if (res.data.code === 502) {
+            this.$message.waring(res.data.msg)
+          } else {
+            this.$message.success('登录成功')
+            this.dialogFormVisible = false
+          }
+        }
+      }
+      if (this.activeName === 'email') {
+        this.form.phone = ''
+        this.form.password = encodeURIComponent(this.form.password)
+        const res = await loginInEmail(this.form)
+        if (res.status === 200) {
+          if (res.data.code === 502) {
+            this.$message.waring(res.data.msg)
+          } else if (res.data.code === 200) {
+            this.$message.success('登录成功')
+            this.initUserCookie(res.data.cookie)
+            this.initUserInfo(res.data.profile)
+            this.dialogFormVisible = false
+          }
+        }
+        console.log(res)
+      }
+    },
+    // 切换tabs栏执行回调
+    handleClick (tab) {
+      // console.log(tab.name)
+      if (tab.name === 'phone') {
+        this.rules = {
+          phone: [
+            { required: true, trigger: 'blur', validator: validateMobile }
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          ]
+        }
+      } else if (tab.name === 'email') {
+        this.rules = {
+          email: [
+            { required: true, trigger: 'blur', validator: validateEamil }
+          ],
+          password: [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          ]
+        }
+      }
+    },
+    // 获取登录状态
+    async loginstate () {
+      const res = await loginStatus()
+      console.log(res)
+    },
+    // 签到事件 无用
+    async loginSignin () {
+      const res = await userSigninAPI()
+      console.log(res)
+      if (res.code === 200 && res.point === 4) {
+        this.$message.warning('请勿重复签到')
+      }
+      if (res.code === 200 && res.point === 3) {
+        this.$message.success('签到成功')
+      }
+      // if()
+      // if (res.coo)
+    },
+    async loginOut () {
+      const res = await userLoginOut()
+      console.log(res)
+      if (res.data.code === 200) {
+        this.clearUserInfo()
+        this.visible = false
+      }
     }
-
+  },
+  computed: {
+    ...mapState(['userInfo']),
+    ...mapGetters(['isLogin'])
   },
   created () {
     // 页面加载时自动搜索热词
     this.getHotKeys()
+    // this.loginstate()
   }
 }
 </script>
 
 <style lang='less' scoped>
 .head {
-  height: 10vh;
+  // height: 10vh;
   background-color: #ec4141;
-  line-height: 10vh;
+  line-height: 60px;
   position: fixed;
   top: 0;
   left: 0;
+  // display: flex;
+  width: 100vw;
+  // justify-content: space-between;
+  .user {
+    display: flex;
+    .user_avatar {
+      padding-right: 10px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+    }
+  }
 }
 
 .hot_title {

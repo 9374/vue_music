@@ -6,6 +6,7 @@ import { getCurrentPlayAPI, getCurrentPlayLyricAPI } from '@/api/mainapi.js'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: JSON.parse(localStorage.getItem('music_state')) || {
+    // 登录状态
     // 当前播放歌曲id
     playId: 0,
     // 播放列表·
@@ -20,9 +21,15 @@ const store = new Vuex.Store({
     // 当前播放状态
     isPlaying: false,
     // 是否单曲循环
-    isLoop: false
+    isLoop: false,
+    token: '',
+    cookie: '',
+    userInfo: {
+      nikename: null
+    }
   },
   mutations: {
+    // 储存本地数据
     // 改变单曲循环状态
     changeLoopState (state, payload) {
       state.isLoop = payload
@@ -116,8 +123,49 @@ const store = new Vuex.Store({
     delOneSong (state, payload) {
       Message.success('移除歌曲成功')
       state.playList = state.playList.filter(item => item.id !== payload)
-      console.log(state.playList)
+      localStorage.setItem('music_state', JSON.stringify(state))
+
+      // console.log(state.playList)
+    },
+    // 储存token
+    // initUserToken (state, payload) {
+    //   state.token = payload
+    //   this.localStorageState()
+    // },
+    initUserInfo (state, payload) {
+      state.userInfo = payload
+      localStorage.setItem('music_state', JSON.stringify(state))
+    },
+    initUserCookie (state, payload) {
+      state.cookie = payload
+      // console.log(payload)
+      localStorage.setItem('music_state', JSON.stringify(state))
+    },
+    // 退出登录
+    clearUserInfo (state) {
+      console.log('清空数据')
+      state.userInfo = {}
+      state.cookie = ''
+      // state.commit('clearAllCookie')
+      this.commit('clearAllCookie')
+      // console.log(this.commit('clearAllCookie'))
+      localStorage.setItem('music_state', JSON.stringify(state))
+    },
+    clearAllCookie () {
+      // console.log(123)
+      var date = new Date()
+      date.setTime(date.getTime() - 10000)
+      // eslint-disable-next-line no-useless-escape
+      var keys = document.cookie.match(/[^ =;]+(?=\=)/g)
+      console.log('需要删除的cookie名字：' + keys)
+      if (keys) {
+        for (var i = keys.length; i--;) {
+          document.cookie =
+            keys[i] + '=0; expire=' + date.toGMTString() + '; path=/'
+        }
+      }
     }
+    // 储存用户信息
   },
   actions: {
     // 发送请求获取当前播放歌曲的详细信息
@@ -168,6 +216,13 @@ const store = new Vuex.Store({
         return state.currentPlay.al.picUrl + '?param=200y200'
       } else {
         return ''
+      }
+    },
+    isLogin (state) {
+      if (state.cookie && state.userInfo) {
+        return true
+      } else {
+        return false
       }
     }
   }

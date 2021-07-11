@@ -30,7 +30,8 @@
 </template>
 
 <script>
-import { GetFound } from '../../../api/mainapi'
+import { mapGetters } from 'vuex'
+import { GetFound } from '@/api/mainapi.js'
 // import { mapMutations } from 'vuex'
 export default {
   data () {
@@ -41,6 +42,11 @@ export default {
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       // 歌单列表
       list: []
+    }
+  },
+  watch: {
+    isLogin (newval) {
+      this.getFoundlist()
     }
   },
   created () {
@@ -54,6 +60,9 @@ export default {
       // console.log(result)
       this.list = result
     }
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   }
 }
 

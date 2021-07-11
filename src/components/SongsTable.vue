@@ -8,12 +8,15 @@
         style="width: 100%"
         :row-class-name="tableRowClassName"
       >
-        <el-table-column width="40">
+        <!--  -->
+        <el-table-column type="index" width="34">
           <template #default="{ row }">
             <i
-              :class="isPlaying ? 'el-icon-loading' : 'el-icon-caret-right'"
               v-show="row.id === playId"
-            ></i>
+              :class="isPlaying ? 'el-icon-loading' : 'el-icon-caret-right'"
+            >
+            </i>
+            <!-- <p>{{ row }}</p> -->
           </template>
         </el-table-column>
         <el-table-column prop="name" label="音乐标题"> </el-table-column>
