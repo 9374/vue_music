@@ -1,6 +1,7 @@
 import axios from 'axios'
 // let root = ''
 import store from '@/store/index.js'
+import { Message } from 'element-ui'
 const request = axios.create({
   baseURL: process.env.NODE_ENV === 'development' ? 'http://mana.sn9374.com:3000' : 'https://pl-fe.cn/cloud-music-api/'
 })
@@ -54,6 +55,12 @@ request.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   return response
 }, function (error) {
+  // 如果请求状态404，并且服务器返回false 为检测歌曲无版权,跳过一首歌曲，并进行提示
+  if (error.response.status === 404 && !error.response.data.success) {
+    Message.warning(error.response.data.message + '自动跳过一首')
+    store.commit('dropOneSong')
+  }
+  // if (errot.response)
   // 对响应错误做点什么
   return Promise.reject(error)
 })

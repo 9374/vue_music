@@ -1,5 +1,6 @@
 <template>
   <el-row>
+    <!-- 播放器 -->
     <el-col :span="12">
       <div class="player">
         <div class="player_disk">
@@ -14,8 +15,6 @@
                 backgroundImage: coverUrl ? `url(${coverUrl})` : '',
               }"
             />
-            <!-- <img src="@/assets/cover.jpg" alt=""> -->
-            <!-- backgroundImage: coverUrl ? `url(${coverUrl})` : '', -->
           </div>
         </div>
         <!-- 控制部分 -->
@@ -27,7 +26,12 @@
             </div>
             <div class="control_btn" @click="onplay">
               <!-- 播放按钮 -->
-              <i :class="icon"> </i>
+              <i
+                :class="
+                  isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play'
+                "
+              >
+              </i>
               <!-- <span class="play-btn" /> -->
             </div>
             <!--    下一曲 -->
@@ -58,6 +62,7 @@
       </div>
       ></el-col
     >
+    <!-- 歌词框 -->
     <el-col :span="12">
       <div v-if="newLyric" class="lyric">
         <p>
@@ -65,6 +70,7 @@
         </p>
       </div></el-col
     >
+    <!-- audio标签 -->
     <el-col :span="0">
       <audio
         ref="audio"
@@ -87,7 +93,9 @@ import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
   data () {
     return {
+      /* 当前歌词 */
       contentText: '',
+      /* 处理后的歌词 */
       newLyric: [],
       // playurl: '',
       stopMatrix: 0,
@@ -105,6 +113,7 @@ export default {
     }
   },
   watch: {
+    // 检测播放id变化 改变播放id  获取播放歌曲详细信息，获取歌词
     playId (newval) {
       // console.log(this.playUrl)
       // 改变当前播放的id
@@ -123,7 +132,7 @@ export default {
   methods: {
     ...mapMutations(['changePlayId', 'playNextSong', 'playPrevSong', 'changePlayState']),
     ...mapActions(['getCurrentPlay', 'getCurrentPlayLyric']),
-    // 下一首
+    // 下一首 改变播放id,
     next () {
       this.playNextSong(this.playId)
       console.log('当前播放id', this.playId, '点击下一首')
@@ -133,48 +142,44 @@ export default {
       this.playPrevSong(this.playId)
       console.log('当前播放id', this.playId, '点击上一首')
     },
-    // changeUrl () {
-    //   this.playurl = `https://music.163.com/song/media/outer/url?id=${this.playId}.mp3`
-    //   this.getCover()
-    //   this.changeLyric()
-    // },
     // 歌曲加载完成自动获取总时长
     getDuration () {
       this.duration = this.$refs.audio.duration
     },
     // 当音乐开始播放
     play () {
+      // 改变播放状态
       this.changePlayState(true)
+      // 如果没有歌词 发送请求获取歌词
       if (!this.newLyric) {
         this.getCurrentPlayLyric(this.playId)
       }
+      // 如果详细信息不等于正在播放的歌曲 自动获取最新的
+      if (this.currentPlay.id !== this.playId) {
+        this.getCurrentPlay(this.playId)
+      }
+      // 处理歌词
       this.changeLyric()
     },
     // 音乐暂停
     pause () {
+      // 改变播放状态
       this.changePlayState(false)
     },
     // 歌曲进度更新时
     onupdate () {
+      // 动态更新播放事件
       if (this.$refs.audio.currentTime) {
         this.position = this.$refs.audio.currentTime
       }
-      // console.log(this.$refs.audio.currentTime)
+      // 根据播放时间展示歌词
       if (this.newLyric[parseInt(this.position)]) {
         this.currentLyric = this.newLyric[parseInt(this.position)]
       }
-      // console.log(parseInt(this.position))
-
-      // if (this.timer1) {
-      //   return
-      // }
-      // this.timer1 = setTimeout(() => {
-
-      //   this.timer1 = null
-      // }, 500)
     },
     // 点击播放按钮
     onplay () {
+      // 改变播放状态 如果不在播放就自动播放 如果在播放就暂停
       if (this.isPlaying === false) {
         this.$refs.audio.play()
       } else {
@@ -183,9 +188,11 @@ export default {
     },
     // 音乐播放完毕
     end () {
+      // 改变播放状态
       this.changePlayState(false)
       // this.isPlaying = false
       console.log('结束播放')
+      // 触发下一曲事件
       this.$store.commit('playNextSong', this.playId)
     },
     // 处理歌词
@@ -241,32 +248,17 @@ export default {
       // s = s.substring(0, 2)
       return h + ':' + s
     }
-
-    // 更新封面
-    // getCover () {
-    //   setTimeout(() => {
-    //     // 获取封面图片
-    //     this.coverUrl = this.currentPlay.al.picUrl + '?param=200y200'
-    //   }, 1000)
-    // }
-    // 关闭侧栏
-
   },
   computed: {
     ...mapState(['playId', 'currentPlay', 'lyric', 'playList', 'isPlaying', 'isLoop']),
     ...mapGetters(['playUrl', 'coverUrl']),
-    // 计算当前播放按钮的图表
-    icon () {
-      if (this.isPlaying) {
-        return 'el-icon-video-pause'
-      } else {
-        return 'el-icon-video-play'
-      }
-    },
     // 计算进度条长度
     progress () {
+      // 如果有播放地址
       if (this.playUrl) {
+        // 算出当前播放占比
         const str = this.position / this.duration
+        // 转百分比
         return `${(str * 100).toFixed(2)}%`
       } else {
         return 0

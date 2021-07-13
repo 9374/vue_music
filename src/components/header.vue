@@ -27,7 +27,12 @@
           ></el-avatar>
         </div>
         <div class="user_info">
-          <p v-show="!isLogin" @click="dialogFormVisible = true">未登录</p>
+          <p
+            v-show="!isLogin"
+            @click="(dialogFormVisible = true), (activeName = 'email')"
+          >
+            未登录
+          </p>
           <p v-show="isLogin" v-popover:popoverUser>
             {{ userInfo.nickname || "未登录" }}
           </p>
@@ -97,7 +102,9 @@
         <el-tab-pane label="二维码" name="Qrkey"></el-tab-pane>
       </el-tabs>
       <div v-show="activeName === 'Qrkey'">
-        <canvas ref="MyCanvas"></canvas>
+        <el-row :gutter="20" type="flex" justify="center">
+          <canvas ref="MyCanvas"></canvas>
+        </el-row>
       </div>
       <!-- 手机登录表单 -->
       <el-form
@@ -143,7 +150,9 @@
       trigger="click"
     >
       <div>
-        <el-button type="danger" round @click="loginOut">退出登录</el-button>
+        <el-row type="flex" justify="center">
+          <el-button type="danger" round @click="loginOut">退出登录</el-button>
+        </el-row>
       </div>
     </el-popover>
   </el-header>
@@ -195,7 +204,7 @@ export default {
         password: ''
       },
       // 当前选择的登录页
-      activeName: 'phone',
+      activeName: 'email',
       // 校验规则
       rules: {
         phone: [
@@ -217,6 +226,7 @@ export default {
     dialogFormVisible (newval) {
       if (!newval) {
         clearInterval(this.Qrtimer)
+        this.Qrtimer = null
       }
     }
   },
@@ -355,7 +365,6 @@ export default {
     // 获取生成二维码的key
     async getQrKey () {
       const res = await loginCreateKey()
-
       if (res.data.data.code === 200) {
         this.QrKey = res.data.data.unikey
         console.log(this.QrKey)
@@ -373,6 +382,7 @@ export default {
     },
     // 轮训二维码状态
     getQrState () {
+      console.log('开始轮训', this.Qrtimer)
       if (!this.Qrtimer) {
         this.Qrtimer = setInterval(async () => {
           const res = await confirmQrStatus(this.QrKey)
@@ -380,6 +390,7 @@ export default {
           if (res.data.code === 400) {
             this.$message.warning(res.data.message)
             clearInterval(this.Qrtimer)
+            this.Qrtimer = null
           }
           if (res.data.code === 802) {
             this.$message.success(res.data.message)
@@ -388,6 +399,7 @@ export default {
             this.$message.success(res.data.message)
             this.dialogFormVisible = false
             clearInterval(this.Qrtimer)
+            this.Qrtimer = null
             this.initUserCookie(res.data.cookie)
             // 检测登录状态
             this.loginstate()
@@ -396,6 +408,7 @@ export default {
           if (res.data.code === 800) {
             if (this.isLogin) {
               clearInterval(this.Qrtimer)
+              this.Qrtimer = null
             }
           }
         }, 2000)

@@ -2,60 +2,67 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Message } from 'element-ui'
 import { getCurrentPlayAPI, getCurrentPlayLyricAPI, getMusicStatusAPI } from '@/api/mainapi.js'
-
 Vue.use(Vuex)
 const store = new Vuex.Store({
   state: JSON.parse(localStorage.getItem('music_state')) || {
-    // 登录状态
     // 当前播放歌曲id
     playId: 0,
+    // 被检测id
+    PlayStateId: 0,
     // 播放列表·
     playList: [],
-    // 当前播放对象
+    // 当前播放歌曲详细信息对象
     currentPlay: null,
-    // coverUrl: '',
     // 歌词
     lyric: '',
     // 当前播放序列
-    currentIndex: '',
+    currentIndex: 0,
     // 当前播放状态
     isPlaying: false,
     // 是否单曲循环
     isLoop: false,
-    token: '',
+    // 登录成功储存cookie
     cookie: '',
+    // 用户信息
     userInfo: {
       nikename: null
     }
   },
   mutations: {
     // 储存本地数据
-    // 改变单曲循环状态
     localStorageSet (state) {
       console.log('我要存')
       localStorage.setItem('music_state', JSON.stringify(state))
     },
+    // 改变单曲循环状态
     changeLoopState (state, payload) {
       state.isLoop = payload
       localStorage.setItem('music_state', JSON.stringify(state))
     },
-    // 改变正在播放的音乐
+    // 改变正在播放的音乐（进入检测）
     changePlayId (state, payload) {
       // console.log('我改变了id', payload)
+      state.PlayStateId = payload
       this.dispatch('getMusicStatus', payload)
+      // 储存被检测的id
       // if()
       // state.playId = payload
-      this.commit('localStorageSet')
+      // this.commit('localStorageSet')
       // localStorage.setItem('music_state', JSON.stringify(state))
     },
+    // 检测成功可以播放 进行赋值
     changePlay (state, payload) {
       state.playId = payload
     },
-    // 改变播放状态
+    // 播放前检测是否可以播放的id
+    changePlayStateId (state, payload) {
+      state.PlayStateId = payload
+    },
+    // 改变当前播放状态
     changePlayState (state, payload) {
       state.isPlaying = payload
     },
-    // 给播放列表添加
+    // 给播放列表添加音乐
     addPlayList (state, payload) {
       // state.playList = state.playList.filter(item => item.id !== payload.id)
       // state.playList.push(payload)
@@ -73,7 +80,7 @@ const store = new Vuex.Store({
       Message.success('清空播放列表成功')
       localStorage.setItem('music_state', JSON.stringify(state))
     },
-    // 改变currentPlay
+    // 改变当前播放歌曲信息currentPlay
     changecurrentPlay (state, payload) {
       state.currentPlay = payload
       localStorage.setItem('music_state', JSON.stringify(state))
@@ -113,6 +120,11 @@ const store = new Vuex.Store({
         }
       }
     },
+    // 跳过一首
+    dropOneSong (state) {
+      console.log('不能播放的', state.PlayStateId)
+      this.commit('playNextSong', state.PlayStateId)
+    },
     // 上一首
     playPrevSong (state, payload) {
       if (state.playList.length >= 1) {
@@ -137,15 +149,12 @@ const store = new Vuex.Store({
 
       // console.log(state.playList)
     },
-    // 储存token
-    // initUserToken (state, payload) {
-    //   state.token = payload
-    //   this.localStorageState()
-    // },
+    // 储存用户数据
     initUserInfo (state, payload) {
       state.userInfo = payload
       localStorage.setItem('music_state', JSON.stringify(state))
     },
+    // 储存cookie
     initUserCookie (state, payload) {
       state.cookie = payload
       // console.log(payload)
@@ -161,6 +170,7 @@ const store = new Vuex.Store({
       // console.log(this.commit('clearAllCookie'))
       this.commit('localStorageSet')
     },
+    // 清除cookie
     clearAllCookie () {
       // console.log(123)
       var date = new Date()
@@ -176,6 +186,7 @@ const store = new Vuex.Store({
       }
     }
     // 储存用户信息
+
   },
   actions: {
     // 发送请求获取当前播放歌曲的详细信息
@@ -189,6 +200,7 @@ const store = new Vuex.Store({
         // this.coverUrl = res.songs[0].al.picUrl
       }
     },
+    // 将当前播放添加到播放列表
     async addToList (ctx, payload) {
       const { data: res } = await getCurrentPlayAPI(payload)
       if (res.code === 200) {
@@ -198,6 +210,7 @@ const store = new Vuex.Store({
         // state.addPlayList()
       }
     },
+    // 获取当前播放的歌曲歌词
     async getCurrentPlayLyric (ctx, id) {
       console.log('获取歌词')
       const { data: res } = await getCurrentPlayLyricAPI(id)
@@ -211,24 +224,24 @@ const store = new Vuex.Store({
 
       }
     },
+    /**
+    * 1. 点击下一首，进入检测函数 检测歌曲是否可用
+    * 2.可用 切换歌曲 不可用 进入404 执行跳过函数
+    * 3.跳过函数 检测检测id在歌单中的位置，找到就播放被检测的下一首 在进入检测下一首 成功就播放 不成功就继续
+    * @param {*} ctx
+    * @param {*} id
+    */
+    // 检测歌曲是否可以用
     async getMusicStatus (ctx, id) {
-      console.log('我要检测', id)
       const res = await getMusicStatusAPI(id)
-      console.log('能不能用啊', res)
-      if (res.data.success) {
-        this.commit('changePlay', id)
-        ctx.commit('localStorageSet')
-      } else {
-        this.$message.warning(res.data.message)
-        ctx.commit('playNextSong', id)
+      if (res?.data?.success) {
+        ctx.commit('changePlay', id)
       }
-      // localStorage.setItem('music_state', JSON.stringify())
-
-      // if (!res.data.success) {
-      // }
+      // ctx.commit('localStorageSet')
     }
   },
   getters: {
+    // 播放地址
     playUrl (state) {
       if (!state.playId) {
         return ''
@@ -236,14 +249,16 @@ const store = new Vuex.Store({
         return `https://music.163.com/song/media/outer/url?id=${state.playId}.mp3`
       }
     },
+    // 歌曲封面
     coverUrl (state) {
       if (state.currentPlay) {
         // console.log('有')
-        return state.currentPlay.al.picUrl + '?param=200y200'
+        return state.currentPlay.al.picUrl + '?param=100y100'
       } else {
         return ''
       }
     },
+    // 登录状态
     isLogin (state) {
       if (state.cookie && state.userInfo) {
         return true

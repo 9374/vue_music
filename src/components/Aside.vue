@@ -43,18 +43,23 @@ export default {
   data () {
     return {
       userPlayList: {
+        // 获取用户的歌单
         playlist: []
       }
     }
   },
   watch: {
+    // 根据登录状态
     isLogin (newVal) {
+      // 如果登录调用方法获取歌单
       if (newVal) {
         this.initUserPlayList()
       } else {
+        // 否则清空歌单
         this.userPlayList = {}
       }
     },
+    // 根据登录状态
     userInfo (newval) {
       if (newval) {
         this.initUserPlayList()
@@ -64,7 +69,10 @@ export default {
     }
   },
   methods: {
+    // 调用接口获取歌单
     async initUserPlayList () {
+      // console.log('获取收藏列表')
+      // 如果是登录状态获取用户歌单
       if (this.isLogin) {
         const res = await userPlaylistAPI(this.userInfo.userId)
         // console.log(res)
@@ -78,6 +86,7 @@ export default {
   computed: {
     ...mapGetters(['isLogin']),
     ...mapState(['userInfo']),
+    // 用户创建的歌单
     userCreatePlayList () {
       // console.log(this.userPlayList)
       if (this.userPlayList.playlist) {
@@ -86,6 +95,7 @@ export default {
         return []
       }
     },
+    // 用户收藏的歌单
     userCollectionPlayList () {
       if (this.userPlayList.playlist) {
         return this.userPlayList.playlist.filter(item => item.subscribed === true)
@@ -95,7 +105,7 @@ export default {
     }
   },
   created () {
-    // console.log(this.isLogin)
+    // 页面加载自动加载歌单
     this.initUserPlayList()
   }
 }
