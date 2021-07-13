@@ -39,6 +39,7 @@ request.interceptors.request.use(function (config) {
       config.params = {
         ...config.params,
         cookie: store.state.cookie
+
       }
     }
   }

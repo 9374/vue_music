@@ -72,3 +72,12 @@ export const getCurrentPlayLyricAPI = function (id) {
     }
   })
 }
+// 检测歌曲是否可用
+export const getMusicStatusAPI = function (id) {
+  return request({
+    url: '/check/music',
+    params: {
+      id
+    }
+  })
+}

@@ -97,8 +97,7 @@
         <el-tab-pane label="二维码" name="Qrkey"></el-tab-pane>
       </el-tabs>
       <div v-show="activeName === 'Qrkey'">
-        <p>暂未开发</p>
-        <img src="" alt="" />
+        <canvas ref="MyCanvas"></canvas>
       </div>
       <!-- 手机登录表单 -->
       <el-form
@@ -152,10 +151,11 @@
 
 <script>
 // 获取搜索接口
-import { loginInPhone, loginInEmail, loginStatus, userSigninAPI, userLoginOut } from '@/api/userAPI.js'
+import { loginInPhone, loginInEmail, loginStatus, userSigninAPI, userLoginOut, loginCreateKey, loginInitQr, confirmQrStatus } from '@/api/userAPI.js'
 import { searchApi, hotSearchNameApi } from '../api/search'
 //  引入预览列表组件
 import SongItem from '../components/SongItem.vue'
+import Qrcode from 'qrcode'
 import { mapMutations, mapGetters, mapState } from 'vuex'
 const validateMobile = (rule, value, callback) => {
   if (!/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(value)) {
@@ -174,6 +174,8 @@ const validateEamil = (rule, value, callback) => {
 export default {
   data () {
     return {
+      QrKey: '',
+      QrInfo: '',
       // 输入框双向绑定的值
       input: '',
       // 搜索结果储存
@@ -203,13 +205,19 @@ export default {
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
         ]
-      }
+      },
+      Qrtimer: null
     }
   },
   watch: {
     // 输入框值改变后调用获取搜索结果;
     input (newval) {
       this.getSearch()
+    },
+    dialogFormVisible (newval) {
+      if (!newval) {
+        clearInterval(this.Qrtimer)
+      }
     }
   },
   // 引入搜索预览组件
@@ -260,6 +268,8 @@ export default {
           } else {
             this.$message.success('登录成功')
             this.dialogFormVisible = false
+            this.initUserCookie(res.data.cookie)
+            this.initUserInfo(res.data.profile)
           }
         }
       }
@@ -303,12 +313,23 @@ export default {
             { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
           ]
         }
+      } else if (tab.name === 'Qrkey') {
+        if (this.QrKey) {
+          console.log('有key')
+          this.getQrinfo()
+        } else {
+          console.log('没有key')
+          this.getQrKey()
+        }
       }
     },
     // 获取登录状态
     async loginstate () {
       const res = await loginStatus()
       console.log(res)
+      if (res.data.data.code === 200) {
+        this.initUserInfo(res.data.data.profile)
+      }
     },
     // 签到事件 无用
     async loginSignin () {
@@ -329,6 +350,55 @@ export default {
       if (res.data.code === 200) {
         this.clearUserInfo()
         this.visible = false
+      }
+    },
+    // 获取生成二维码的key
+    async getQrKey () {
+      const res = await loginCreateKey()
+
+      if (res.data.data.code === 200) {
+        this.QrKey = res.data.data.unikey
+        console.log(this.QrKey)
+      }
+      this.getQrinfo()
+    },
+    // 生成二维码
+    async getQrinfo () {
+      if (this.QrKey) {
+        const res = await loginInitQr(this.QrKey)
+        console.log(res)
+        Qrcode.toCanvas(this.$refs.MyCanvas, res.data.data.qrurl)
+        this.getQrState()
+      }
+    },
+    // 轮训二维码状态
+    getQrState () {
+      if (!this.Qrtimer) {
+        this.Qrtimer = setInterval(async () => {
+          const res = await confirmQrStatus(this.QrKey)
+          console.log(res)
+          if (res.data.code === 400) {
+            this.$message.warning(res.data.message)
+            clearInterval(this.Qrtimer)
+          }
+          if (res.data.code === 802) {
+            this.$message.success(res.data.message)
+          }
+          if (res.data.code === 803) {
+            this.$message.success(res.data.message)
+            this.dialogFormVisible = false
+            clearInterval(this.Qrtimer)
+            this.initUserCookie(res.data.cookie)
+            // 检测登录状态
+            this.loginstate()
+            // this.initUserInfo(res.data.profile)
+          }
+          if (res.data.code === 800) {
+            if (this.isLogin) {
+              clearInterval(this.Qrtimer)
+            }
+          }
+        }, 2000)
       }
     }
   },

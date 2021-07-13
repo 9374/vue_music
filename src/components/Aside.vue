@@ -54,6 +54,13 @@ export default {
       } else {
         this.userPlayList = {}
       }
+    },
+    userInfo (newval) {
+      if (newval) {
+        this.initUserPlayList()
+      } else {
+        this.userPlayList = {}
+      }
     }
   },
   methods: {

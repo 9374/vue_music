@@ -106,8 +106,7 @@ export default {
   },
   watch: {
     playId (newval) {
-      console.log('当前id', newval)
-      console.log(this.playUrl)
+      // console.log(this.playUrl)
       // 改变当前播放的id
       this.changePlayId(newval)
       // 获取封面
@@ -117,6 +116,8 @@ export default {
       // 获取当前播放歌曲的歌词
       this.getCurrentPlayLyric(newval)
       // this.changeLyric()
+
+      // console.log('当前id', newval)
     }
   },
   methods: {
@@ -240,6 +241,7 @@ export default {
       // s = s.substring(0, 2)
       return h + ':' + s
     }
+
     // 更新封面
     // getCover () {
     //   setTimeout(() => {

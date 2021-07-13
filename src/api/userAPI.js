@@ -43,7 +43,7 @@ export const loginCreateKey = function () {
  * @returns
  */
 // 通过生成的key 生成二维码
-export const loginInitQr = function ({ key, qrimg }) {
+export const loginInitQr = function (key, qrimg) {
   return request({
     url: '/login/qr/create',
     params: {
@@ -102,6 +102,7 @@ export const userSigninAPI = function () {
     url: '/daily_signin'
   })
 }
+// 退出登录
 export const userLoginOut = function () {
   return request({
     url: '/logout'

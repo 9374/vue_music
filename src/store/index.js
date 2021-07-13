@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { Message } from 'element-ui'
-import { getCurrentPlayAPI, getCurrentPlayLyricAPI } from '@/api/mainapi.js'
+import { getCurrentPlayAPI, getCurrentPlayLyricAPI, getMusicStatusAPI } from '@/api/mainapi.js'
 
 Vue.use(Vuex)
 const store = new Vuex.Store({
@@ -31,15 +31,25 @@ const store = new Vuex.Store({
   mutations: {
     // 储存本地数据
     // 改变单曲循环状态
+    localStorageSet (state) {
+      console.log('我要存')
+      localStorage.setItem('music_state', JSON.stringify(state))
+    },
     changeLoopState (state, payload) {
       state.isLoop = payload
       localStorage.setItem('music_state', JSON.stringify(state))
     },
     // 改变正在播放的音乐
     changePlayId (state, payload) {
-      console.log('我改变了id', payload)
+      // console.log('我改变了id', payload)
+      this.dispatch('getMusicStatus', payload)
+      // if()
+      // state.playId = payload
+      this.commit('localStorageSet')
+      // localStorage.setItem('music_state', JSON.stringify(state))
+    },
+    changePlay (state, payload) {
       state.playId = payload
-      localStorage.setItem('music_state', JSON.stringify(state))
     },
     // 改变播放状态
     changePlayState (state, payload) {
@@ -149,7 +159,7 @@ const store = new Vuex.Store({
       // state.commit('clearAllCookie')
       this.commit('clearAllCookie')
       // console.log(this.commit('clearAllCookie'))
-      localStorage.setItem('music_state', JSON.stringify(state))
+      this.commit('localStorageSet')
     },
     clearAllCookie () {
       // console.log(123)
@@ -200,6 +210,22 @@ const store = new Vuex.Store({
       } else {
 
       }
+    },
+    async getMusicStatus (ctx, id) {
+      console.log('我要检测', id)
+      const res = await getMusicStatusAPI(id)
+      console.log('能不能用啊', res)
+      if (res.data.success) {
+        this.commit('changePlay', id)
+        ctx.commit('localStorageSet')
+      } else {
+        this.$message.warning(res.data.message)
+        ctx.commit('playNextSong', id)
+      }
+      // localStorage.setItem('music_state', JSON.stringify())
+
+      // if (!res.data.success) {
+      // }
     }
   },
   getters: {
