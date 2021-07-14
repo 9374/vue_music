@@ -196,7 +196,7 @@ const store = new Vuex.Store({
         console.log('歌曲信息', res.songs[0])
         ctx.commit('changecurrentPlay', res.songs[0])
         ctx.commit('addPlayList', res.songs[0])
-        console.log(res.songs[0])
+        // console.log(res.songs[0])
         // this.coverUrl = res.songs[0].al.picUrl
       }
     },
@@ -214,12 +214,12 @@ const store = new Vuex.Store({
     async getCurrentPlayLyric (ctx, id) {
       console.log('获取歌词')
       const { data: res } = await getCurrentPlayLyricAPI(id)
-      if (res.code === 200 && res.uncollected === true) {
+      if (res.code === 200 && res.nolyric === true) {
         ctx.commit('changeCurrentLyric', '当前歌曲暂无歌词')
         console.log('歌词', res, '无歌词')
       } else if (res.code === 200) {
         console.log('歌词', res, '有歌词')
-        ctx.commit('changeCurrentLyric', res.lrc.lyric)
+        ctx.commit('changeCurrentLyric', res.lrc?.lyric)
       } else {
 
       }

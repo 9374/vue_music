@@ -12,34 +12,31 @@ request.interceptors.request.use(function (config) {
 
   // eslint-disable-next-line eqeqeq
   if (config.method == 'post') {
-    if (config.url.indexOf('/login') !== -1) {
-      // console.log('是登录接口')
-      config.data = {
-        ...config.data,
-        _t: Date.parse(new Date()) / 1000
-      }
+    // console.log('是登录接口')
+    config.data = {
+      ...config.data,
+      _t: Date.parse(new Date()) / 1000
     }
     if (store.state.cookie) {
       // console.log(store.state.cookie)
       config.data = {
         ...config.data,
-        cookie: store.state.cookie
+        cookie: encodeURIComponent(store.state.cookie)
       }
     }
     // eslint-disable-next-line eqeqeq
   } else if (config.method == 'get') {
-    if (config.url.indexOf('/login') !== -1) {
-      // 是登录
-      config.params = {
-        _t: Date.parse(new Date()) / 1000,
-        ...config.params
-      }
+    // 是登录
+    config.params = {
+      _t: Date.parse(new Date()) / 1000,
+      ...config.params
     }
+
     if (store.state.cookie) {
       // console.log(store.state.cookie)
       config.params = {
         ...config.params,
-        cookie: store.state.cookie
+        cookie: encodeURIComponent(store.state.cookie)
 
       }
     }

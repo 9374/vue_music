@@ -165,6 +165,7 @@ import { searchApi, hotSearchNameApi } from '../api/search'
 //  引入预览列表组件
 import SongItem from '../components/SongItem.vue'
 import Qrcode from 'qrcode'
+import md5 from 'md5'
 import { mapMutations, mapGetters, mapState } from 'vuex'
 const validateMobile = (rule, value, callback) => {
   if (!/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/.test(value)) {
@@ -201,14 +202,15 @@ export default {
       form: {
         phone: '',
         email: '',
-        password: ''
+        password: '',
+        md5_password: ''
       },
       // 当前选择的登录页
       activeName: 'email',
       // 校验规则
       rules: {
-        phone: [
-          { required: true, trigger: 'blur', validator: validateMobile }
+        email: [
+          { required: true, trigger: 'blur', validator: validateEamil }
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
@@ -268,13 +270,15 @@ export default {
     // 登录事件
     async login () {
       if (this.activeName === 'phone') {
-        this.form.email = ''
-        this.form.password = encodeURIComponent(this.form.password)
+        this.form.email = null
+        // this.form.password = encodeURIComponent(this.form.password)
+        this.form.md5_password = md5(encodeURIComponent(this.form.password))
+        this.form.password = null
         const res = await loginInPhone(this.form)
         console.log(res)
         if (res.status === 200) {
           if (res.data.code === 502) {
-            this.$message.waring(res.data.msg)
+            this.$message.warning(res.data.msg)
           } else {
             this.$message.success('登录成功')
             this.dialogFormVisible = false
@@ -284,12 +288,14 @@ export default {
         }
       }
       if (this.activeName === 'email') {
-        this.form.phone = ''
-        this.form.password = encodeURIComponent(this.form.password)
+        this.form.phone = null
+        // this.form.password = encodeURIComponent(this.form.password)
+        this.form.md5_password = md5(encodeURIComponent(this.form.password))
+        this.form.password = null
         const res = await loginInEmail(this.form)
         if (res.status === 200) {
           if (res.data.code === 502) {
-            this.$message.waring(res.data.msg)
+            this.$message.warning(res.data.msg)
           } else if (res.data.code === 200) {
             this.$message.success('登录成功')
             this.initUserCookie(res.data.cookie)

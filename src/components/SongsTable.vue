@@ -104,6 +104,7 @@ export default {
     // 从vuex中获取改变播放音乐id的方法
     ...mapMutations(['changePlayId', 'addPlayList', 'delOneSong']),
     // 点击改变播放音乐的id
+    // 播放
     onPlay (playid) {
       console.log('我要播放', playid)
       this.changePlayId(playid)
@@ -113,8 +114,8 @@ export default {
     onPlaylistClick (row, column, event) {
       // console.log(row, column, event)
       this.changePlayId(row.id)
-      // this.getCurrentPlay(row.id)
-      // this.getCurrentPlayLyric(row.id)
+      //   // this.getCurrentPlay(row.id)
+      //   // this.getCurrentPlayLyric(row.id)
     },
     tableRowClassName ({ row, rowIndex }) {
       // console.log(row, rowIndex)

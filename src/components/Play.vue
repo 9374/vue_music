@@ -64,7 +64,7 @@
     >
     <!-- 歌词框 -->
     <el-col :span="12">
-      <div v-if="newLyric" class="lyric">
+      <div v-show="showlyric" class="lyric">
         <p>
           {{ currentLyric }}
         </p>
@@ -97,6 +97,7 @@ export default {
       contentText: '',
       /* 处理后的歌词 */
       newLyric: [],
+      showlyric: true,
       // playurl: '',
       stopMatrix: 0,
       // coverUrl: '',
@@ -117,16 +118,18 @@ export default {
     playId (newval) {
       // console.log(this.playUrl)
       // 改变当前播放的id
-      this.changePlayId(newval)
+      // this.changePlayId(newval)
       // 获取封面
       // this.getCover()
       // 获取当前播放歌曲的详情
-      this.getCurrentPlay(newval)
-      // 获取当前播放歌曲的歌词
+      // this.getCurrentPlay(newval)
+      // // 获取当前播放歌曲的歌词
       this.getCurrentPlayLyric(newval)
       // this.changeLyric()
-
       // console.log('当前id', newval)
+    },
+    lyric (newval) {
+      this.changeLyric()
     }
   },
   methods: {
@@ -151,15 +154,15 @@ export default {
       // 改变播放状态
       this.changePlayState(true)
       // 如果没有歌词 发送请求获取歌词
-      if (!this.newLyric) {
+      if (!this.lyric) {
         this.getCurrentPlayLyric(this.playId)
       }
-      // 如果详细信息不等于正在播放的歌曲 自动获取最新的
+      // 如果详细信息不等于正在播放的歌曲 自动获取最新的歌曲详情并处理歌词
       if (this.currentPlay.id !== this.playId) {
         this.getCurrentPlay(this.playId)
       }
       // 处理歌词
-      this.changeLyric()
+      // this.changeLyric()
     },
     // 音乐暂停
     pause () {
@@ -197,38 +200,41 @@ export default {
     },
     // 处理歌词
     changeLyric () {
-      setTimeout(() => {
-        if (this.lyric) {
-          console.log('开始处理歌词')
-          const arr = this.lyric.split('[')
-          // console.log(arr)
-          const newarr = []
-          // const arr2 = []
-          arr.forEach(item => {
-            newarr.push(item.split(']'))
-          })
-          const obj2 = {}
-          // console.log(newarr)
-          newarr.forEach((item, i) => {
-            // console.log(item)
-            // const obj = {
-            //   // 逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
-            //   // 10*60 +20
-            //   time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
-            //   text: item[1]
-            // }
-            obj2[item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1] = item[1]
-            // console.log(item[0].split('.')[0].split(':')[0] * 60)
-            // // console.log(item[0].split('.')[0].split(':')[0])
-            // console.log(item[0].split('.')[0].split(':')[1] * 1)
-            // newarr[i] = item[0].split('.')[0].split(':')
-            // arr2.push(obj)
-          })
-          // console.log(obj2)
-          this.newLyric = obj2
-          // console.log(arr2)
-        }
-      }, 1000)
+      if (this.lyric && this.lyric !== '当前歌曲暂无歌词') {
+        console.log('开始处理歌词')
+        const arr = this.lyric.split('[')
+        // console.log(arr)
+        const newarr = []
+        // const arr2 = []
+        arr.forEach(item => {
+          newarr.push(item.split(']'))
+        })
+        const obj2 = {}
+        // console.log(newarr)
+        newarr.forEach((item, i) => {
+          // console.log(item)
+          // const obj = {
+          //   // 逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
+          //   // 10*60 +20
+          //   time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
+          //   text: item[1]
+          // }
+          obj2[item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1] = item[1]
+          // console.log(item[0].split('.')[0].split(':')[0] * 60)
+          // // console.log(item[0].split('.')[0].split(':')[0])
+          // console.log(item[0].split('.')[0].split(':')[1] * 1)
+          // newarr[i] = item[0].split('.')[0].split(':')
+          // arr2.push(obj)
+        })
+        // console.log(obj2)
+        this.newLyric = obj2
+        console.log(obj2)
+        // console.log(arr2)
+      } else {
+        console.log('没有歌词')
+        this.newLyric = ''
+        this.currentLyric = '当前歌曲暂无歌词'
+      }
     },
     // 过滤器
     s_to_hs (s) {

@@ -6,7 +6,7 @@
     <el-row type="flex" :gutter="10" align="top" justify="space-around">
       <el-col
         @click.native="$router.push('/home/songsList/' + item.id)"
-        :span="6"
+        :span="4"
         v-for="item in list"
         :key="item.id"
         class="card"
@@ -17,8 +17,8 @@
             class="image"
             :src="
               item.picUrl
-                ? item.picUrl + '?param=400y400'
-                : item.coverImgUrl + '?param=400y400'
+                ? item.picUrl + '?param=300y300'
+                : item.coverImgUrl + '?param=300y300'
             "
             :fit="fits[2]"
           ></el-image>

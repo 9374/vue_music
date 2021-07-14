@@ -10,10 +10,11 @@ export const LoginStatus = function () {
  * @returns
  */
 // 通过手机登录
-export const loginInPhone = function (params) {
+export const loginInPhone = function (data) {
   return request({
+    method: 'post',
     url: '/login/cellphone',
-    params
+    data
   })
 }
 /**
@@ -21,10 +22,11 @@ export const loginInPhone = function (params) {
  * @param {*} params  params:{email,password,md5_password}
  * @returns
  */
-export const loginInEmail = function (params) {
+export const loginInEmail = function (data) {
   return request({
     url: '/login',
-    params
+    method: 'post',
+    data
   })
 }
 
