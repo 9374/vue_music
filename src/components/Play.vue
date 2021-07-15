@@ -45,7 +45,7 @@
           <div class="progress" :class="{ progress__playing: isPlaying }">
             <!-- 歌曲名称 -->
             <h2 class="progress_title">
-              {{ playId ? currentPlay.name : "暂无播放歌曲" }}
+              {{ currentPlay ? currentPlay.name : "暂无播放歌曲" }}
             </h2>
             <!-- 歌曲时间 -->
             <p class="progress_text">
@@ -68,8 +68,9 @@
         <p>
           {{ currentLyric }}
         </p>
-      </div></el-col
-    >
+        <p v-show="currentTranslationLyric">{{ currentTranslationLyric }}</p>
+      </div>
+    </el-col>
     <!-- audio标签 -->
     <el-col :span="0">
       <audio
@@ -96,7 +97,8 @@ export default {
       /* 当前歌词 */
       contentText: '',
       /* 处理后的歌词 */
-      newLyric: [],
+      newLyric: '',
+      newLyric2: '',
       showlyric: true,
       // playurl: '',
       stopMatrix: 0,
@@ -108,9 +110,9 @@ export default {
       // 进度条 定义在计算属性
       // progress: 0,
       playSong: {},
-      timer: null,
-      timer1: null,
-      currentLyric: ''
+
+      currentLyric: '',
+      currentTranslationLyric: ''
     }
   },
   watch: {
@@ -124,6 +126,7 @@ export default {
       // 获取当前播放歌曲的详情
       // this.getCurrentPlay(newval)
       // // 获取当前播放歌曲的歌词
+
       this.getCurrentPlayLyric(newval)
       // this.changeLyric()
       // console.log('当前id', newval)
@@ -154,8 +157,14 @@ export default {
       // 改变播放状态
       this.changePlayState(true)
       // 如果没有歌词 发送请求获取歌词
-      if (!this.lyric) {
-        this.getCurrentPlayLyric(this.playId)
+      // if (!this.lyric) {
+      //   this.getCurrentPlayLyric(this.playId)
+      // }
+      // if (!this.newLyric) {
+      //   this.changeLyric()
+      // }
+      if (!this.currentPlay) {
+        this.getCurrentPlay(this.playId)
       }
       // 如果详细信息不等于正在播放的歌曲 自动获取最新的歌曲详情并处理歌词
       if (this.currentPlay.id !== this.playId) {
@@ -179,6 +188,9 @@ export default {
       if (this.newLyric[parseInt(this.position)]) {
         this.currentLyric = this.newLyric[parseInt(this.position)]
       }
+      if (this.newLyric2 && this.newLyric2[parseInt(this.position)]) {
+        this.currentTranslationLyric = this.newLyric2[parseInt(this.position)]
+      }
     },
     // 点击播放按钮
     onplay () {
@@ -191,6 +203,7 @@ export default {
     },
     // 音乐播放完毕
     end () {
+      this.currentLyric = ''
       // 改变播放状态
       this.changePlayState(false)
       // this.isPlaying = false
@@ -200,6 +213,8 @@ export default {
     },
     // 处理歌词
     changeLyric () {
+      this.currentLyric = null
+      this.currentTranslationLyric = null
       if (this.lyric && this.lyric !== '当前歌曲暂无歌词') {
         console.log('开始处理歌词')
         const arr = this.lyric.split('[')
@@ -228,12 +243,42 @@ export default {
         })
         // console.log(obj2)
         this.newLyric = obj2
-        console.log(obj2)
         // console.log(arr2)
       } else {
         console.log('没有歌词')
         this.newLyric = ''
         this.currentLyric = '当前歌曲暂无歌词'
+      }
+      if (this.lyric2) {
+        // console.log(this.lyric2)
+        console.log('开始处理翻译歌词')
+        const arr = this.lyric2.split('[')
+        // console.log(arr)
+        const newarr = []
+        // const arr2 = []
+        arr.forEach(item => {
+          newarr.push(item.split(']'))
+        })
+        const obj2 = {}
+        // console.log(newarr)
+        newarr.forEach((item, i) => {
+          // console.log(item)
+          // const obj = {
+          //   // 逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
+          //   // 10*60 +20
+          //   time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
+          //   text: item[1]
+          // }
+          obj2[item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1] = item[1]
+          // console.log(item[0].split('.')[0].split(':')[0] * 60)
+          // // console.log(item[0].split('.')[0].split(':')[0])
+          // console.log(item[0].split('.')[0].split(':')[1] * 1)
+          // newarr[i] = item[0].split('.')[0].split(':')
+          // arr2.push(obj)
+        })
+        this.newLyric2 = obj2
+      } else {
+        this.newLyric2 = null
       }
     },
     // 过滤器
@@ -256,7 +301,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['playId', 'currentPlay', 'lyric', 'playList', 'isPlaying', 'isLoop']),
+    ...mapState(['playId', 'currentPlay', 'lyric', 'playList', 'isPlaying', 'isLoop', 'lyric2']),
     ...mapGetters(['playUrl', 'coverUrl']),
     // 计算进度条长度
     progress () {

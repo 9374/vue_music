@@ -12,9 +12,11 @@ const store = new Vuex.Store({
     // 播放列表·
     playList: [],
     // 当前播放歌曲详细信息对象
-    currentPlay: null,
+    currentPlay: '',
     // 歌词
     lyric: '',
+    // 翻译歌词
+    lyric2: '',
     // 当前播放序列
     currentIndex: 0,
     // 当前播放状态
@@ -25,7 +27,7 @@ const store = new Vuex.Store({
     cookie: '',
     // 用户信息
     userInfo: {
-      nikename: null
+      nikename: ''
     }
   },
   mutations: {
@@ -88,7 +90,13 @@ const store = new Vuex.Store({
     },
     // 获取歌词
     changeCurrentLyric (state, payload) {
-      state.lyric = payload
+      state.lyric = payload.lyric
+      if (payload.lyric2) {
+        state.lyric2 = payload.lyric2
+      } else {
+        state.lyric2 = ''
+      }
+      // console.log(state.lyric, state.lyric2)
       // console.log(state.lyric)
       // console.log(state.lyric)
       localStorage.setItem('music_state', JSON.stringify(state))
@@ -219,9 +227,7 @@ const store = new Vuex.Store({
         console.log('歌词', res, '无歌词')
       } else if (res.code === 200) {
         console.log('歌词', res, '有歌词')
-        ctx.commit('changeCurrentLyric', res.lrc?.lyric)
-      } else {
-
+        ctx.commit('changeCurrentLyric', { lyric: res.lrc?.lyric, lyric2: res.tlyric?.lyric })
       }
     },
     /**
