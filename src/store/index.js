@@ -12,7 +12,11 @@ const store = new Vuex.Store({
     // 播放列表·
     playList: [],
     // 当前播放歌曲详细信息对象
-    currentPlay: '',
+    currentPlay: {
+      id: '',
+      name: '',
+      al: { picUrl: '' }
+    },
     // 歌词
     lyric: '',
     // 翻译歌词
@@ -257,7 +261,7 @@ const store = new Vuex.Store({
     },
     // 歌曲封面
     coverUrl (state) {
-      if (state.currentPlay) {
+      if (state.currentPlay.al.picUrl) {
         // console.log('有')
         return state.currentPlay.al.picUrl + '?param=100y100'
       } else {
