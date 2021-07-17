@@ -24,7 +24,7 @@
           <el-button type="primary" @click="addAlltoList" round
             >播放全部</el-button
           >
-          <el-button type="primary" disabled round>收藏</el-button>
+          <el-button type="info" disabled round>收藏</el-button>
         </div>
       </div>
     </div>
@@ -81,7 +81,7 @@ export default {
   props: ['id'],
   methods: {
     // 改变正在播放的歌曲id
-    ...mapMutations(['changePlayId', 'addPlayList', 'clearPlayList']),
+    ...mapMutations('play', ['changePlayId', 'addPlayList', 'clearPlayList']),
     // 获取歌单列表的函数
     async getSongsList () {
       const { data: res } = await GetSongsListAPI(this.id)

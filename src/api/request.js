@@ -17,11 +17,11 @@ request.interceptors.request.use(function (config) {
       ...config.data,
       _t: Date.parse(new Date()) / 1000
     }
-    if (store.state.cookie) {
+    if (store.state.user.cookie) {
       // console.log(store.state.cookie)
       config.data = {
         ...config.data,
-        cookie: encodeURIComponent(store.state.cookie)
+        cookie: store.state.user.cookie
       }
     }
     // eslint-disable-next-line eqeqeq
@@ -31,12 +31,11 @@ request.interceptors.request.use(function (config) {
       _t: Date.parse(new Date()) / 1000,
       ...config.params
     }
-
-    if (store.state.cookie) {
+    if (store.state.user.cookie) {
       // console.log(store.state.cookie)
       config.params = {
         ...config.params,
-        cookie: encodeURIComponent(store.state.cookie)
+        cookie: store.state.user.cookie
 
       }
     }
@@ -55,7 +54,7 @@ request.interceptors.response.use(function (response) {
   // 如果请求状态404，并且服务器返回false 为检测歌曲无版权,跳过一首歌曲，并进行提示
   if (error.response.status === 404 && !error.response.data.success) {
     Message.warning(error.response.data.message + '自动跳过一首')
-    store.commit('dropOneSong')
+    store.commit('play/dropOneSong')
   }
   // if (errot.response)
   // 对响应错误做点什么

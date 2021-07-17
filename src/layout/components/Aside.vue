@@ -1,6 +1,6 @@
 <template>
   <!-- 侧边栏 -->
-  <el-aside class="aside" style="width: 250px; font-size: 14px">
+  <div style="height: 100%">
     <el-menu :default-openeds="['1', '3']" router active-text-color="#ec4141">
       <el-menu-item index="/home">
         <i class="el-icon-menu"></i>
@@ -10,8 +10,9 @@
         <template slot="title">
           <i class="el-icon-s-custom"></i>创建的歌单</template
         >
-        <el-menu-item-group v-if="userCreatePlayList">
+        <el-menu-item-group>
           <el-menu-item
+            class="menuSongList"
             v-for="item in userCreatePlayList"
             :key="item.id"
             :index="'/home/songsList/' + item.id"
@@ -23,8 +24,9 @@
         <template slot="title">
           <i class="el-icon-star-on"></i>收藏的歌单</template
         >
-        <el-menu-item-group v-if="userCollectionPlayList">
+        <el-menu-item-group>
           <el-menu-item
+            style="padding: 0 20px"
             v-for="item in userCollectionPlayList"
             :key="item.id"
             :index="'/home/songsList/' + item.id"
@@ -33,15 +35,19 @@
         </el-menu-item-group>
       </el-submenu>
     </el-menu>
-  </el-aside>
+  </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { userPlaylistAPI } from '@/api/userAPI.js'
 export default {
   data () {
     return {
+      userPlayList: {
+        // 获取用户的歌单
+        playlist: []
+      }
     }
   },
   watch: {
@@ -52,7 +58,7 @@ export default {
         this.initUserPlayList()
       } else {
         // 否则清空歌单
-        this.changeUserPlayList([])
+        this.userPlayList = {}
       }
     },
     // 根据登录状态
@@ -60,31 +66,45 @@ export default {
       if (newval) {
         this.initUserPlayList()
       } else {
-        this.changeUserPlayList([])
+        this.userPlayList = {}
       }
     }
   },
   methods: {
-    ...mapMutations('user', ['changeUserPlayList']),
     // 调用接口获取歌单
     async initUserPlayList () {
+      // console.log('获取收藏列表')
       // 如果是登录状态获取用户歌单
-      if (this.isLogin && this.userInfo.userId) {
+      if (this.isLogin) {
         const res = await userPlaylistAPI(this.userInfo.userId)
         // console.log(res)
-        console.log(res)
-        if (res.data.code === 200) {
+        if (res.status === 200) {
           // console.log('接受', res.data)
-          this.changeUserPlayList(res.data.playlist)
-        } else if (res.data.code === 400) {
-          this.$message.warning(res.data.message)
+          this.userPlayList = res.data
         }
       }
     }
   },
   computed: {
-    ...mapGetters('user', ['isLogin', 'userCreatePlayList', 'userCollectionPlayList']),
-    ...mapState('user', ['userInfo'])
+    ...mapGetters('user', ['isLogin']),
+    ...mapState('user', ['userInfo']),
+    // 用户创建的歌单
+    userCreatePlayList () {
+      // console.log(this.userPlayList)
+      if (this.userPlayList.playlist) {
+        return this.userPlayList.playlist.filter(item => item.subscribed === false)
+      } else {
+        return []
+      }
+    },
+    // 用户收藏的歌单
+    userCollectionPlayList () {
+      if (this.userPlayList.playlist) {
+        return this.userPlayList.playlist.filter(item => item.subscribed === true)
+      } else {
+        return ['']
+      }
+    }
   },
   created () {
     // 页面加载自动加载歌单
@@ -93,50 +113,21 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-.aside {
-  border-right: 1px solid #e6e6e6;
-  .el-menu {
-    border-right: none;
-  }
+<style lang="less" scoped >
+/deep/.el-menu-item li {
+  margin-left: 10px;
+  height: 20px;
+  line-height: 20px;
+  padding: 0px 20px;
+  // color: #999;
+  font-size: 13px;
+  cursor: pointer; /*鼠标放上变小手*/
+  text-overflow: ellipsis; /*当对象内文本溢出时显示省略标记(...)；需与overflow:hidden;一起使用。*/
 }
-.el-header {
-  background-color: #b3c0d1;
-  color: #333;
-  line-height: 60px;
-}
-.el-aside {
-  color: #333;
-}
-</style>
-<style lang='less'>
-.el-submenu .el-menu-item {
-  font-size: 14px;
-  padding: 0 30px !important;
-}
-.el-menu-item-group ul {
-  width: 100%;
-  overflow: hidden;
-}
-/*-------滚动条整体样式----*/
-::-webkit-scrollbar {
-  width: 5px;
-  height: 8px;
-}
-/*滚动条里面小方块样式*/
-::-webkit-scrollbar-thumb {
-  border-radius: 100px;
-  // -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(transparent, #ec4141, transparent);
-  // background:#ec4141
-  // background:#d4d4d4
-  // background-image: ;
-}
-/*滚动条里面轨道样式*/
-::-webkit-scrollbar-track {
-  // -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 0;
-  // background: linear-gradient(#fff, transparent);
-  background: rgba(0, 0, 0, 0.1);
+/deep/.el-menu-item-group ul {
+  word-break: keep-all; /*不换行*/
+  white-space: nowrap; /*不换行*/
+  overflow: hidden; /*内容超出宽度时隐藏超出部分的内容*/
+  text-overflow: ellipsis; /*当对象内文本溢出时显示省略标记(...)；需与overflow:hidden;一起使用。*/
 }
 </style>

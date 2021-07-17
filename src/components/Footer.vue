@@ -29,7 +29,6 @@
       >
         <el-card class="box-card">
           <div slot="header" class="clearfix"></div>
-
           <template #header class="clearfix">
             <h3>正在播放</h3>
             <div class="info" style="display: flex">
@@ -69,7 +68,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['changePlayId', 'clearPlayList', 'changeLoopState']),
+    ...mapMutations('play', ['changePlayId', 'clearPlayList', 'changeLoopState']),
     handleClose (done) {
       done()
     },
@@ -82,7 +81,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['playList', 'isLoop'])
+    ...mapState('play', ['playList', 'isLoop'])
   },
   name: 'Footer'
 

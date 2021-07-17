@@ -2,10 +2,10 @@
   <div id="app">
     <el-container style="height: 100vh">
       <Header />
-      <el-container>
+      <el-container style="padding: 60px 0px">
         <Aside> </Aside>
         <el-main class="view" style="padding: 5px 20px">
-          <keep-alive> <router-view class="main"></router-view></keep-alive>
+          <router-view class="main"></router-view>
         </el-main>
       </el-container>
       <Footer />
@@ -33,12 +33,14 @@ export default {
 }
 </script>
 <style lang="less">
-.view {
-  max-height: 82vh;
-  width: 85vw;
-  position: absolute;
-  top: 10vh;
-  left: 15vw;
+.el-button--primary {
+  background-color: #ec4141;
+  border-color: #ec4141;
+}
+.el-button--primary:focus,
+.el-button--primary:hover {
+  background-color: #ec4141;
+  border-color: #ec4141;
 }
 
 * {

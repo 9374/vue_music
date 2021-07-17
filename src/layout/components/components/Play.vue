@@ -80,14 +80,12 @@
         @play="play"
         @pause="pause"
         :src="playUrl"
+        preload="metadata"
+        autoplay
         @ended="end"
         :loop="isLoop"
-        :autoplay="isPlaying"
       ></audio
     ></el-col>
-
-    <!--         -->
-    <!--  preload="metadata" -->
   </el-row>
 </template>
 
@@ -120,20 +118,20 @@ export default {
     // 检测播放id变化 改变播放id  获取播放歌曲详细信息，获取歌词
     playId (newval) {
       console.log(newval)
+      // console.log(this.playUrl)
+      // 改变当前播放的id
+      // this.changePlayId(newval)
+      // 获取封面
+      // this.getCover()
       // 获取当前播放歌曲的详情
       this.getCurrentPlay(newval)
       // // 获取当前播放歌曲的歌词
       this.getCurrentPlayLyric(newval)
+      // this.changeLyric()
+      // console.log('当前id', newval)
     },
     lyric (newval) {
       this.changeLyric()
-    },
-    isPlaying (newval) {
-      if (newval) {
-        this.$refs.audio.play()
-      } else {
-        this.$refs.audio.pause()
-      }
     }
   },
   methods: {
@@ -158,18 +156,23 @@ export default {
     play () {
       // 改变播放状态
       this.changePlayState(true)
-      setTimeout(() => {
-        if (this.playId !== this.currentPlay.id) {
-          // console.log(this.playId)
-          this.getCurrentPlay(this.playId)
-        }
-        if (!this.lyric) {
-          this.getCurrentPlayLyric(this.playId)
-        }
-      }, 2000)
-      if (!this.newLyric && this.lyric) {
-        this.changeLyric()
+      // 如果没有歌词 发送请求获取歌词
+      // if (!this.lyric) {
+      //   this.getCurrentPlayLyric(this.playId)
+      // }
+      // if (!this.newLyric) {
+      //   this.changeLyric()
+      // }
+      if (this.playId && !this.currentPlay) {
+        // console.log(this.playId)
+        this.getCurrentPlay(this.playId)
       }
+      // 如果详细信息不等于正在播放的歌曲 自动获取最新的歌曲详情并处理歌词
+      // if (this.currentPlay && this.currentPlay.id !== this.playId) {
+      //   this.getCurrentPlay(this.playId)
+      // }
+      // 处理歌词
+      // this.changeLyric()
     },
     // 音乐暂停
     pause () {
@@ -179,39 +182,35 @@ export default {
     // 歌曲进度更新时
     onupdate () {
       // 动态更新播放事件
-      if (this.$refs.audio?.currentTime) {
-        this.position = this.$refs.audio?.currentTime
+      if (this.$refs.audio.currentTime) {
+        this.position = this.$refs.audio.currentTime
       }
       // 根据播放时间展示歌词
       if (this.newLyric[parseInt(this.position)]) {
         this.currentLyric = this.newLyric[parseInt(this.position)]
-        if (this.newLyric2) {
-          this.currentTranslationLyric = this.newLyric2[parseInt(this.position)]
-        }
+      }
+      if (this.newLyric2 && this.newLyric2[parseInt(this.position)]) {
+        this.currentTranslationLyric = this.newLyric2[parseInt(this.position)]
       }
     },
     // 点击播放按钮
     onplay () {
       // 改变播放状态 如果不在播放就自动播放 如果在播放就暂停
       if (this.isPlaying) {
-        this.changePlayState(false)
         this.$refs.audio.pause()
       } else {
-        this.changePlayState(true)
         this.$refs.audio.play()
       }
     },
     // 音乐播放完毕
-    async end () {
+    end () {
       this.currentLyric = ''
       // 改变播放状态
       this.changePlayState(false)
+      // this.isPlaying = false
+      // console.log('结束播放')
       // 触发下一曲事件
-      await this.playNextSong(this.playId)
-      // 改变完成id后等待1秒，如果有播放id 开始播放
-      setTimeout(() => {
-        if (this.playId) { this.changePlayState(true) }
-      }, 1000)
+      this.playNextSong(this.playId)
       // this.$store.commit('play/playNextSong', )
     },
     // 处理歌词
@@ -496,6 +495,6 @@ export default {
 .progress_line span {
   display: block;
   height: 100%;
-  background-color: #ec4141;
+  background-color: #ec51a5;
 }
 </style>

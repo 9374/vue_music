@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 // import Songs from '@/views/songs.vue'
-const Main = () => import('@/views/Main/Main.vue')
+// const Main = () => import('@/views/Main/Main.vue')
 // import Main from '@/views/Main/Main.vue'
 const Found = () => import('@/views/Main/Found/Found.vue')
 // import Found from '@/views/Main/Found/Found.vue'
@@ -16,6 +16,7 @@ const NewMusiclist = () => import('@/views/Main/Found/NewMusiclist.vue')
 const SearchList = () => import('@/views/Main/Found/SearchList/SearchList.vue')
 // import SearchList from '@/views/Main/Found/SearchList/SearchList.vue'
 const Play = () => import('@/components/Play.vue')
+const Layout = () => import('@/layout/index.vue')
 // import Play from '@/components/Play.vue'
 // import test from '@/views/test.vue'
 Vue.use(VueRouter)
@@ -29,18 +30,12 @@ const routes = [
     component: Home,
     children: [
       // 默认选中main
-      {
-        path: '',
-        component: Main,
-        children: [
-          // 推荐/发现音乐
-          { path: '', component: Found, name: 'found' },
-          // 歌单
-          { path: 'allSongsList', component: AllSongsList, name: 'allSongsList' },
-          // 最新音乐
-          { path: 'newmusiclist', component: NewMusiclist, name: 'newmusiclist' }
-        ]
-      },
+      // 推荐/发现音乐
+      { path: '', component: Found, name: 'found' },
+      // 歌单
+      { path: 'allSongsList', component: AllSongsList, name: 'allSongsList' },
+      // 最新音乐
+      { path: 'newmusiclist', component: NewMusiclist, name: 'newmusiclist' },
       { path: 'songsList/:id', component: SongsList, name: 'songslist', props: true },
       { path: 'searchList/:kw', component: SearchList, name: 'searchlist', props: true }
       // { path: 'test/:id', component: test, name: 'test', props: true }
@@ -52,6 +47,10 @@ const routes = [
   {
     path: '/play',
     component: Play
+  },
+  {
+    path: '/layout',
+    component: Layout
   }
 
 ]

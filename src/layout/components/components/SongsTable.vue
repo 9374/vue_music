@@ -68,7 +68,7 @@
           <el-button type="primary" @click="onPlay(row.id)" round>
             <i class="el-icon-video-play"></i>播放
           </el-button>
-          <el-button type="info" @click="addToList(row.id)" round
+          <el-button type="success" @click="addToList(row.id)" round
             >添加到列表</el-button
           >
         </template>

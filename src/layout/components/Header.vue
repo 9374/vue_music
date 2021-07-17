@@ -1,5 +1,5 @@
 <template>
-  <el-header class="head">
+  <div>
     <el-row :gutter="20">
       <el-col :span="12" :offset="0">
         <el-input
@@ -36,7 +36,7 @@
             未登录
           </p>
           <p v-show="isLogin" v-popover:popoverUser>
-            {{ userInfo.nickname ? userInfo.nickname : "未获取到登录信息" }}
+            {{ userInfo.nickname }}
           </p>
         </div>
       </el-col>
@@ -157,7 +157,7 @@
         </el-row>
       </div>
     </el-popover>
-  </el-header>
+  </div>
 </template>
 
 <script>

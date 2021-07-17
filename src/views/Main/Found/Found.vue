@@ -1,39 +1,50 @@
 <template>
   <div>
-    <!--           @click.native="getSongsList(item.id)" -->
-    <!-- 发现音乐组件 -->
-    <p class="title">推荐歌单</p>
-    <el-row type="flex" :gutter="40" align="top" justify="space-around">
-      <el-col :span="4" v-for="item in list" :key="item.id" class="card">
-        <el-card
-          shadow="hover"
-          :body-style="{ padding: '0px' }"
-          @click.native="$router.push('/home/songsList/' + item.id)"
-        >
-          <el-image
-            :lazy="true"
-            class="image"
-            :src="item.picUrl + '?param=300y300'"
-            :fit="fits[2]"
-          ></el-image>
-          <div style="padding: 14px">
-            <span>{{ item.name }}</span>
-            <div class="bottom clearfix">
-              <time class="time">{{ item.copywriter }}</time>
-              <!-- <el-button type="text" class="button">操作按钮</el-button> -->
+    <NavMenu />
+    <div style="padding-top: 60px">
+      <p class="title">推荐歌单</p>
+      <el-row
+        type="flex"
+        :gutter="40"
+        align="top"
+        justify="space-around"
+        style="font-size: 14px"
+      >
+        <el-col :span="4" v-for="item in list" :key="item.id" class="card">
+          <el-card
+            shadow="hover"
+            :body-style="{ padding: '0px' }"
+            @click.native="$router.push('/home/songsList/' + item.id)"
+          >
+            <el-image
+              :lazy="true"
+              class="image"
+              :src="item.picUrl + '?param=300y300'"
+              :fit="fits[2]"
+            ></el-image>
+            <div style="padding: 14px">
+              <span>{{ item.name }}</span>
+              <div class="bottom clearfix">
+                <time class="time">{{ item.copywriter }}</time>
+                <!-- <el-button type="text" class="button">操作按钮</el-button> -->
+              </div>
             </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import NavMenu from './components/Navmenu.vue'
 import { GetFound } from '@/api/mainapi.js'
 // import { mapMutations } from 'vuex'
 export default {
+  components: {
+    NavMenu
+  },
   data () {
     return {
       // 图片显示模式
@@ -62,7 +73,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isLogin'])
+    ...mapGetters('user', ['isLogin'])
   }
 }
 

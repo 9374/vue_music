@@ -1,27 +1,33 @@
 <template>
   <div>
+    <NavMenu />
     <!-- 精品歌单 -->
-    <SongCart :list="AllSongslist" />
-    <el-pagination
-      :current-page="this.currentPage"
-      background
-      layout="prev, pager, next"
-      :total="total"
-      :page-size="pageSize"
-      @next-click="nextpage"
-      @current-change="currentchangepage"
-      @prev-click="prevpage"
-    >
-    </el-pagination>
+    <div style="padding-top: 60px">
+      <SongCart :list="AllSongslist" />
+      <el-pagination
+        :current-page="this.currentPage"
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="pageSize"
+        @next-click="nextpage"
+        @current-change="currentchangepage"
+        @prev-click="prevpage"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
+import NavMenu from './components/Navmenu.vue'
+
 import { GetAllSongsListAPI } from '@/api/mainapi.js'
 import SongCart from '@/components/SongsCart.vue'
 export default {
   components: {
-    SongCart
+    SongCart,
+    NavMenu
   },
   data () {
     return {

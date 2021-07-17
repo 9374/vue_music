@@ -1,16 +1,21 @@
 <template>
-  <div style="width: 100%">
+  <div>
+    <NavMenu />
     <!-- <p class="title">最新音乐</p> -->
-    <SongsTable status="new" :SongsList="SongList" />
+    <div style="padding-top: 60px">
+      <SongsTable status="new" :SongsList="SongList" />
+    </div>
   </div>
 </template>
 
 <script>
+import NavMenu from './components/Navmenu.vue'
 import { GetnewSongAPI } from '@/api/mainapi.js'
 import SongsTable from '@/components/SongsTable.vue'
 export default {
   components: {
-    SongsTable
+    SongsTable,
+    NavMenu
   },
   data () {
     return {
