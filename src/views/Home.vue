@@ -2,18 +2,20 @@
   <div id="app">
     <el-container style="height: 100vh">
       <Header />
-      <el-container style="padding: 60px 0px">
+      <el-container style="padding: 60px 0px; overflow: hidden">
         <Aside> </Aside>
         <el-main class="view" style="padding: 5px 20px">
           <router-view class="main"></router-view>
         </el-main>
       </el-container>
       <Footer />
+      <MusicDetailCard />
     </el-container>
   </div>
 </template>
 
 <script>
+import MusicDetailCard from '@/views/musicDetailCard/MusicDetailCard.vue'
 import Header from '@/components/header.vue'
 import Aside from '@/components/Aside.vue'
 // import Main from './views/Main.vue'
@@ -22,7 +24,9 @@ export default {
   components: {
     Header,
     Aside,
-    Footer
+    Footer,
+    MusicDetailCard
+
   },
   data () {
     return {

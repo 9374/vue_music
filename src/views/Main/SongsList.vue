@@ -24,7 +24,13 @@
           <el-button type="primary" @click="addAlltoList" round
             >播放全部</el-button
           >
-          <el-button type="info" disabled round>收藏</el-button>
+          <el-button
+            @click="subscribeSongList(seeSongsList.subscribed, seeSongsList.id)"
+            type="info"
+            :disabled="seeSongsList.userId === userInfo.userId || !isLogin"
+            round
+            >{{ seeSongsList.subscribed ? "已收藏" : "收藏" }}</el-button
+          >
         </div>
       </div>
     </div>
@@ -55,9 +61,9 @@
 //  引入歌单表格组件进行复用
 import SongsTable from '@/components/SongsTable.vue'
 // 引入vuex中的方法
-import { mapMutations } from 'vuex'
+import { mapMutations, mapState, mapActions, mapGetters } from 'vuex'
 // 引入获取歌单信息的接口
-import { GetSongsListAPI } from '@/api/mainapi'
+import { GetSongsListAPI, subscribeSongListAPI } from '@/api/mainapi'
 export default {
   // 监听id变化重新发送请求获取最新歌单，清空原歌单数据
   watch: {
@@ -68,6 +74,7 @@ export default {
   },
   // 获取歌单信息
   created () {
+    // console.log(this.isLoginh)
     // console.log(this.id)
     this.getSongsList()
   },
@@ -82,6 +89,7 @@ export default {
   methods: {
     // 改变正在播放的歌曲id
     ...mapMutations('play', ['changePlayId', 'addPlayList', 'clearPlayList']),
+    ...mapActions('user', ['initUserPlayList']),
     // 获取歌单列表的函数
     async getSongsList () {
       const { data: res } = await GetSongsListAPI(this.id)
@@ -98,22 +106,52 @@ export default {
       this.changePlayId(palyid)
     },
     addAlltoList () {
-      this.$confirm('全部播放替换掉当前播放歌单', '提示').then(() => {
-        this.changePlayId(this.seeSongsList.tracks[0].id)
-        this.clearPlayList()
+      // 如果当前播放列表有数据 进行提示
+      if (this.playList.length > 0) {
+        this.$confirm('全部播放替换掉当前播放歌单', '提示').then(() => {
+          this.clearPlayList() // 清空当前播放列表
+          this.seeSongsList.tracks.forEach(item => {
+            this.addPlayList(item)
+          })
+          this.changePlayId(this.seeSongsList.tracks[0].id)
+        }).catch(console.log)
+      } else {
         this.seeSongsList.tracks.forEach(item => {
-          console.log('全部播放', item)
           this.addPlayList(item)
         })
-      }).catch(() => {
-
-      })
+        this.changePlayId(this.seeSongsList.tracks[0].id)
+      }
+    },
+    async subscribeSongList (state, id) {
+      // 如果值为真发送取消收藏请求，否则发送收藏请求
+      const a = state ? 2 : 1
+      if (state) {
+        const res = await subscribeSongListAPI(id, a)
+        if (res.data.code === 200) {
+          this.$message.success('取消收藏成功')
+          this.seeSongsList.subscribed = false
+          this.initUserPlayList(this.userInfo.userId)
+          console.log(res)
+        }
+      } else {
+        const res = await subscribeSongListAPI(id, a)
+        if (res.data.code === 200) {
+          this.$message.success('收藏成功')
+          this.seeSongsList.subscribed = true
+          this.initUserPlayList(this.userInfo.userId)
+          console.log(res)
+        }
+      }
     }
-
   },
   // 注册歌单表格组件准备复用
   components: {
     SongsTable
+  },
+  computed: {
+    ...mapGetters('user', ['isLogin']),
+    ...mapState('play', ['playList']),
+    ...mapState('user', ['userInfo'])
   }
   // 页面加载自动获取歌单信息
 

@@ -1,54 +1,60 @@
 <template>
-  <el-footer class="footer" style="width: 100vw; padding: 0">
+  <el-footer class="footer" style="z-index: 1001; width: 100vw; padding: 0">
     <el-row>
-      <el-col :span="20">
-        <div class="song">
-          <Play></Play>
-        </div>
+      <el-col v-show="!playDetail" :span="5">
+        <Play />
+      </el-col>
+      <el-col v-show="playDetail" :span="5">
+        <PlayInfo />
+      </el-col>
+      <el-col v-if="!playDetail" :span="15">
+        <LyricFooter />
+      </el-col>
+      <el-col v-else :span="15" style="display: flex; justify-content: center">
+        <Playcontrol />
       </el-col>
       <el-col :span="4">
         <div class="menu">
-          <i
-            @click="changeLoop()"
-            :class="isLoop ? 'el-icon-refresh' : 'el-icon-refresh-right'"
-            style="margin-right: 5px"
-          ></i>
+          <IsLike :state="true" :id="playId" style="margin-right: 5px">
+          </IsLike>
+          <IsLoop />
           <i class="el-icon-s-fold" @click="drawer = !drawer"></i>
         </div>
       </el-col>
       <!-- show-close是否显示关闭按钮，modal：是否需要遮罩 size 宽度 append-to-body 添加到body， 是否显示，  打开放行  关闭回调-->
-      <el-drawer
-        :withHeader="false"
-        :show-close="false"
-        size="30%"
-        :modal="false"
-        :append-to-body="true"
-        :visible.sync="drawer"
-        :direction="direction"
-        :before-close="handleClose"
-      >
-        <el-card class="box-card">
-          <div slot="header" class="clearfix"></div>
-          <template #header class="clearfix">
-            <h3>正在播放</h3>
-            <div class="info" style="display: flex">
-              <div>
-                <span style="clolor: #ccc">共{{ playList.length }}首</span>
-              </div>
-              <div class="btn">
-                <el-button type="primary" round disabled
-                  ><i class="el-icon-folder-add"></i> 收藏全部</el-button
-                >
-                <el-button type="info" round @click="clearPlayList()"
-                  >清空列表</el-button
-                >
-              </div>
-            </div>
-          </template>
-          <SongsTable :SongsList="playList" status="list" :btn="false" />
-        </el-card>
-      </el-drawer>
     </el-row>
+    <el-drawer
+      style="padding-bottom: 60px"
+      :withHeader="false"
+      :show-close="false"
+      size="40%"
+      :modal="false"
+      :append-to-body="true"
+      :visible.sync="drawer"
+      :direction="direction"
+      :before-close="handleClose"
+    >
+      <el-card class="box-card">
+        <div slot="header" class="clearfix"></div>
+        <template #header class="clearfix">
+          <h3>正在播放</h3>
+          <div class="info" style="display: flex">
+            <div>
+              <span style="clolor: #ccc">共{{ playList.length }}首</span>
+            </div>
+            <div class="btn">
+              <el-button type="primary" round disabled
+                ><i class="el-icon-folder-add"></i> 收藏全部</el-button
+              >
+              <el-button type="info" round @click="clearPlayList1()"
+                >清空列表</el-button
+              >
+            </div>
+          </div>
+        </template>
+        <SongsTable :SongsList="playList" status="list" :btn="false" />
+      </el-card>
+    </el-drawer>
   </el-footer>
 </template>
 
@@ -68,23 +74,21 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('play', ['changePlayId', 'clearPlayList', 'changeLoopState']),
+    ...mapMutations('play', ['changePlayId', 'clearPlayList']),
+    clearPlayList1 () {
+      this.$confirm('确认清空播放列表吗？', '提示').then(() => {
+        this.clearPlayList()
+      }).catch(console.log)
+    },
     handleClose (done) {
       done()
-    },
-    changeLoop () {
-      this.changeLoopState(!this.isLoop)
-      this.$message({
-        message: this.isLoop ? '切换为单曲循环' : '切换为列表循环',
-        type: 'success'
-      })
     }
+
   },
   computed: {
-    ...mapState('play', ['playList', 'isLoop'])
+    ...mapState('play', ['playList', 'playId', 'playDetail'])
   },
   name: 'Footer'
-
 }
 </script>
 
@@ -93,10 +97,10 @@ export default {
   justify-content: center;
   display: flex;
   align-items: center;
-  height: 10vh;
+  height: 60px;
 }
 .footer {
-  // background-color: black;
+  background-color: #fff;
   position: fixed;
   bottom: 0;
   left: 0;

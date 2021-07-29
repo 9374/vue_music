@@ -1,107 +1,88 @@
 <template>
-  <el-row>
-    <!-- 播放器 -->
-    <el-col :span="12">
-      <div class="player">
-        <div class="player_disk">
-          <div class="disk" :class="{ disk__playing: isPlaying }">
-            <!-- 旋转封面 -->
-            <label
-              class="disk_cover"
-              ref="cover"
-              for="file"
-              :style="{
-                transform: stopMatrix,
-                backgroundImage: coverUrl ? `url(${coverUrl})` : '',
-              }"
-            />
-          </div>
-        </div>
-        <!-- 控制部分 -->
-        <div class="player_control">
-          <div class="control" :class="{ control__playing: isPlaying }">
-            <div @click="prev" class="control_btn control_btn__side">
-              <!-- 上一曲-->
-              <i class="el-icon-arrow-left" />
-            </div>
-            <div class="control_btn" @click="onplay">
-              <!-- 播放按钮 -->
-              <i
-                :class="
-                  isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play'
-                "
-              >
-              </i>
-              <!-- <span class="play-btn" /> -->
-            </div>
-            <!--    下一曲 -->
-            <div @click="next" class="control_btn control_btn__side">
-              <i class="el-icon-arrow-right" />
-            </div>
-          </div>
-        </div>
-        <!--  // 播放进度-->
-        <div class="player_progress">
-          <div class="progress" :class="{ progress__playing: isPlaying }">
-            <!-- 歌曲名称 -->
-            <h2 class="progress_title">
-              {{ currentPlay ? currentPlay.name : "暂无播放歌曲" }}
-            </h2>
-            <!-- 歌曲时间 -->
-            <p class="progress_text">
-              {{ s_to_hs(position) }} /
-              {{ s_to_hs(duration) }}
-            </p>
-            <!--  //duration -->
-            <!-- 进度条 -->
-            <div class="progress_line">
-              <span :style="{ width: progress }" />
-            </div>
-          </div>
-        </div>
-      </div>
-      ></el-col
-    >
-    <!-- 歌词框 -->
-    <el-col :span="12">
-      <div v-show="showlyric" class="lyric">
-        <p>
-          {{ currentLyric }}
-        </p>
-        <p v-show="currentTranslationLyric">{{ currentTranslationLyric }}</p>
-      </div>
-    </el-col>
-    <!-- audio标签 -->
-    <el-col :span="0">
-      <audio
-        ref="audio"
-        @timeupdate="onupdate"
-        @canplay="getDuration"
-        @play="play"
-        @pause="pause"
-        :src="playUrl"
-        @ended="end"
-        :loop="isLoop"
-        :autoplay="isPlaying"
-      ></audio
-    ></el-col>
+  <!-- 播放器 -->
 
-    <!--         -->
-    <!--  preload="metadata" -->
-  </el-row>
+  <div style="width: 300px" class="player">
+    <div class="player_disk" @click="changePlayDetailState(true)">
+      <div class="disk" :class="{ disk__playing: isPlaying }">
+        <!-- 旋转封面 -->
+        <label
+          class="disk_cover"
+          ref="cover"
+          for="file"
+          :style="{
+            transform: stopMatrix,
+            backgroundImage: coverUrl ? `url(${coverUrl})` : '',
+          }"
+        />
+      </div>
+    </div>
+    <!-- 控制部分 -->
+    <div class="player_control">
+      <div class="control" :class="{ control__playing: isPlaying }">
+        <div @click="prev" class="control_btn control_btn__side">
+          <!-- 上一曲-->
+          <i class="el-icon-arrow-left" />
+        </div>
+        <div class="control_btn" @click="onplay">
+          <!-- 播放按钮 -->
+          <i :class="isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play'">
+          </i>
+          <!-- <span class="play-btn" /> -->
+        </div>
+        <!--    下一曲 -->
+        <div @click="next" class="control_btn control_btn__side">
+          <i class="el-icon-arrow-right" />
+        </div>
+      </div>
+    </div>
+    <!--  // 播放进度-->
+    <div class="player_progress">
+      <div class="progress" :class="{ progress__playing: isPlaying }">
+        <!-- 歌曲名称 -->
+        <h2 class="progress_title">
+          {{ currentPlay ? currentPlay.name : "暂无播放歌曲" }}
+        </h2>
+        <!-- 歌曲时间 -->
+        <p class="progress_text">
+          {{ s_to_hs(position) }} /
+          {{ s_to_hs(duration) }}
+        </p>
+        <!--  //duration -->
+        <!-- 进度条 -->
+        <div class="progress_line">
+          <span :style="{ width: progress }" />
+        </div>
+      </div>
+    </div>
+    <audio
+      style="display: none"
+      ref="audio"
+      @timeupdate="onupdate"
+      @canplay="getDuration"
+      @play="play"
+      @pause="pause"
+      :src="playUrl"
+      @ended="end"
+      :loop="isLoop"
+      :autoplay="isPlaying"
+    ></audio>
+  </div>
+
+  <!-- 歌词框 -->
+
+  <!-- audio标签 -->
 </template>
 
 <script>
+// eslint-disable-next-line camelcase
+import { s_to_hs } from '@/utils/index.js'
 import { mapMutations, mapState, mapGetters, mapActions } from 'vuex'
 export default {
+
   data () {
     return {
       // /* 当前歌词 */
       // contentText: '',
-      /* 处理后的歌词 */
-      newLyric: '',
-      newLyric2: '',
-      showlyric: true,
       // playurl: '',
       stopMatrix: 0,
       // coverUrl: '',
@@ -111,22 +92,20 @@ export default {
       duration: 0,
       // 进度条 定义在计算属性
       // progress: 0,
-      playSong: {},
-      currentLyric: '',
-      currentTranslationLyric: ''
+      playSong: {}
     }
   },
   watch: {
     // 检测播放id变化 改变播放id  获取播放歌曲详细信息，获取歌词
-    playId (newval) {
-      console.log(newval)
+    'nowPlay.playId' (newval) {
+      // this.currentLyric = ''
+      // this.currentTranslationLyric = ''
+      this.changeCurrentLyric({})
+      // console.log(newval)
       // 获取当前播放歌曲的详情
       this.getCurrentPlay(newval)
-      // // 获取当前播放歌曲的歌词
+      // 获取当前播放歌曲的歌词
       this.getCurrentPlayLyric(newval)
-    },
-    lyric (newval) {
-      this.changeLyric()
     },
     isPlaying (newval) {
       if (newval) {
@@ -134,21 +113,29 @@ export default {
       } else {
         this.$refs.audio.pause()
       }
+    },
+    position (newval) {
+      this.changePlaycurrentTime(this.position)
+    },
+    duration (newval) {
+      this.changePlayTotalTime(this.duration)
     }
   },
   methods: {
-    ...mapMutations('play', ['changePlayId', 'playNextSong', 'playPrevSong', 'changePlayState']),
+    s_to_hs,
+    ...mapMutations('play', ['changePlaycurrentTime', 'changePlayTotalTime', 'changePlayId', 'playNextSong', 'playPrevSong', 'changePlayState', 'changePlayDetailState']),
     ...mapActions('play', ['getCurrentPlay']),
-    ...mapActions('lyric', ['getCurrentPlayLyric']),
+    ...mapActions('lyric', ['getCurrentPlayLyric', 'formatLyric']),
+    ...mapMutations('lyric', ['changeCurrentLyric']),
     // 下一首 改变播放id,
     next () {
-      this.playNextSong(this.playId)
-      console.log('当前播放id', this.playId, '点击下一首')
+      this.playNextSong(this.nowPlay.playId)
+      // console.log('当前播放id', this.nowPlay.playId, '点击下一首')
     },
     // 上一首
     prev () {
       this.playPrevSong(this.playId)
-      console.log('当前播放id', this.playId, '点击上一首')
+      console.log('当前播放id', this.nowPlay.playId, '点击上一首')
     },
     // 歌曲加载完成自动获取总时长
     getDuration () {
@@ -159,17 +146,14 @@ export default {
       // 改变播放状态
       this.changePlayState(true)
       setTimeout(() => {
-        if (this.playId !== this.currentPlay.id) {
+        if (this.nowPlay.playId !== this.currentPlay.id) {
           // console.log(this.playId)
-          this.getCurrentPlay(this.playId)
+          this.getCurrentPlay(this.nowPlay.playId)
         }
         if (!this.lyric) {
-          this.getCurrentPlayLyric(this.playId)
+          this.getCurrentPlayLyric(this.nowPlay.playId)
         }
       }, 2000)
-      if (!this.newLyric && this.lyric) {
-        this.changeLyric()
-      }
     },
     // 音乐暂停
     pause () {
@@ -179,15 +163,8 @@ export default {
     // 歌曲进度更新时
     onupdate () {
       // 动态更新播放事件
-      if (this.$refs.audio?.currentTime) {
-        this.position = this.$refs.audio?.currentTime
-      }
-      // 根据播放时间展示歌词
-      if (this.newLyric[parseInt(this.position)]) {
-        this.currentLyric = this.newLyric[parseInt(this.position)]
-        if (this.newLyric2) {
-          this.currentTranslationLyric = this.newLyric2[parseInt(this.position)]
-        }
+      if (this.$refs.audio?.currentTime > 1) {
+        this.position = parseInt(this.$refs.audio?.currentTime)
       }
     },
     // 点击播放按钮
@@ -195,10 +172,10 @@ export default {
       // 改变播放状态 如果不在播放就自动播放 如果在播放就暂停
       if (this.isPlaying) {
         this.changePlayState(false)
-        this.$refs.audio.pause()
+        // this.$refs.audio.pause()
       } else {
         this.changePlayState(true)
-        this.$refs.audio.play()
+        // this.$refs.audio.play()
       }
     },
     // 音乐播放完毕
@@ -207,74 +184,22 @@ export default {
       // 改变播放状态
       this.changePlayState(false)
       // 触发下一曲事件
-      await this.playNextSong(this.playId)
+      await this.playNextSong(this.nowPlay.playId)
       // 改变完成id后等待1秒，如果有播放id 开始播放
       setTimeout(() => {
-        if (this.playId) { this.changePlayState(true) }
+        if (this.nowPlay.playId) { this.changePlayState(true) }
       }, 1000)
       // this.$store.commit('play/playNextSong', )
-    },
-    // 处理歌词
-    changeLyric () {
-      this.currentLyric = null
-      this.currentTranslationLyric = null
-      if (this.lyric && this.lyric !== '当前歌曲暂无歌词') {
-        this.newLyric = this.formatLyric(this.lyric)
-      } else {
-        this.newLyric = ''
-        this.currentLyric = '当前歌曲暂无歌词'
-      }
-      if (this.lyric2) {
-        this.newLyric2 = this.formatLyric(this.lyric2)
-      } else {
-        this.newLyric2 = null
-      }
-    },
-    /**
-     * 歌词处理逻辑
-     *  逻辑大师 10:20.12 split => 10:20 split => 10*60+ 10:20.12 split => 10:20 .split => 20 *1
-      10*60 +20
-       time: item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1,
-      text: item[1]
-     */
-    formatLyric (lyric) {
-      // console.log('开始处理歌词')
-      const arr = lyric.split('[')
-      // console.log(arr)
-      const newarr = []
-      // const arr2 = []
-      arr.forEach(item => {
-        newarr.push(item.split(']'))
-      })
-      const obj = {}
-      // console.log(newarr)
-      newarr.forEach((item, i) => {
-        obj[item[0].split('.')[0].split(':')[0] * 60 + item[0].split('.')[0].split(':')[1] * 1] = item[1]
-      })
-      return obj
-    },
-    // 过滤器
-    s_to_hs (s) {
-      // 计算分钟
-      // 算法：将秒数除以60，然后下舍入，既得到分钟数
-      var h
-      h = Math.floor(s / 60)
-      // 计算秒
-      // 算法：取得秒%60的余数，既得到秒数
-      s = parseInt(s % 60)
-      // 将变量转换为字符串
-      h += ''
-      s += ''
-      // 如果只有一位数，前面增加一个0
-      h = (h.length === 1) ? '0' + h : h
-      s = (s.length === 1) ? '0' + s : s
-      // s = s.substring(0, 2)
-      return h + ':' + s
     }
+    // 处理歌词
+    /*           this.currentLyric = null
+    this.currentTranslationLyric = null */
+    // 过滤器
+
   },
   computed: {
-    ...mapState('lyric', ['lyric', 'lyric2']),
-    ...mapState('play', ['playId', 'currentPlay', 'playList', 'isPlaying', 'isLoop']),
+    ...mapState('lyric', ['lyric']),
+    ...mapState('play', ['nowPlay', 'currentPlay', 'playList', 'isPlaying', 'isLoop']),
     ...mapGetters('play', ['playUrl', 'coverUrl']),
     // 计算进度条长度
     progress () {
@@ -294,13 +219,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.lyric {
-  height: 10vh;
-  padding: 10px;
-  // height: 20px;
-  color: red;
-  overflow: hidden;
-}
 .player {
   position: relative;
   display: flex;
@@ -373,7 +291,8 @@ export default {
     0 20px 20px -10px rgba(108, 29, 171, 0.3);
 }
 .disk__playing .disk_cover {
-  animation: rotate infinite 6s linear;
+  animation: rotate 25s infinite linear;
+  animation-delay: 0.8s;
 }
 @keyframes rotate {
   from {

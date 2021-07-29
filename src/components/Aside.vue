@@ -37,8 +37,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from 'vuex'
-import { userPlaylistAPI } from '@/api/userAPI.js'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
   data () {
     return {
@@ -49,7 +48,7 @@ export default {
     isLogin (newVal) {
       // 如果登录调用方法获取歌单
       if (newVal) {
-        this.initUserPlayList()
+        this.initUserPlayList(this.userInfo.userId)
       } else {
         // 否则清空歌单
         this.changeUserPlayList([])
@@ -58,29 +57,17 @@ export default {
     // 根据登录状态
     userInfo (newval) {
       if (newval) {
-        this.initUserPlayList()
+        this.initUserPlayList(this.userInfo.userId)
       } else {
         this.changeUserPlayList([])
       }
     }
   },
   methods: {
-    ...mapMutations('user', ['changeUserPlayList']),
+    ...mapActions('user', ['initUserPlayList', 'getUserLoveSong']),
+    ...mapMutations('user', ['changeUserPlayList'])
     // 调用接口获取歌单
-    async initUserPlayList () {
-      // 如果是登录状态获取用户歌单
-      if (this.isLogin && this.userInfo.userId) {
-        const res = await userPlaylistAPI(this.userInfo.userId)
-        // console.log(res)
-        console.log(res)
-        if (res.data.code === 200) {
-          // console.log('接受', res.data)
-          this.changeUserPlayList(res.data.playlist)
-        } else if (res.data.code === 400) {
-          this.$message.warning(res.data.message)
-        }
-      }
-    }
+
   },
   computed: {
     ...mapGetters('user', ['isLogin', 'userCreatePlayList', 'userCollectionPlayList']),
@@ -88,7 +75,11 @@ export default {
   },
   created () {
     // 页面加载自动加载歌单
-    this.initUserPlayList()
+    if (this.isLogin) {
+      // console.log(this.isLogin)
+      this.initUserPlayList(this.userInfo.userId)
+      this.getUserLoveSong(this.userInfo.userId)
+    }
   }
 }
 </script>

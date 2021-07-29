@@ -10,12 +10,8 @@
       <!--  -->
       <el-table-column width="34px">
         <template #default="{ row }">
-          <i
-            v-show="row.id === playId"
-            :class="isPlaying ? 'el-icon-loading' : 'el-icon-caret-right'"
-          >
-          </i>
-          <!-- <p>{{ row }}</p> -->
+          <IsPlayIcon :id="row.id" />
+          <IsLike :id="row.id"> </IsLike>
         </template>
       </el-table-column>
       <el-table-column prop="name" min-width="200" label="音乐标题">
@@ -75,7 +71,7 @@
       </el-table-column>
       <el-table-column v-if="!btn" width="40">
         <template #default="{ row }">
-          <i class="el-icon-delete" @click.stop="delOneSong(row.id)"></i>
+          <DeleteIcon :id="row.id" />
         </template>
       </el-table-column>
     </el-table>
@@ -109,20 +105,21 @@ export default {
     }
   },
   methods: {
-
     ...mapActions('play', ['getCurrentPlay', 'addToList']),
     // 从vuex中获取改变播放音乐id的方法
-    ...mapMutations('play', ['changePlayId', 'addPlayList', 'delOneSong']),
+    ...mapMutations('play', ['changePlayId', 'addPlayList']),
     // 点击改变播放音乐的id
     // 播放
     onPlay (playid) {
       console.log('我要播放', playid)
       this.changePlayId(playid)
     },
+    // 双击事件
     onPlaylistClick (row, column, event) {
       // console.log(row, column, event)
       this.changePlayId(row.id)
     },
+    // 当前播放的音乐样式
     tableRowClassName ({ row, rowIndex }) {
       // console.log(row, rowIndex)
       // console.log(this.playId, row.id)
@@ -134,17 +131,8 @@ export default {
     }
   },
   computed: {
-    ...mapState('play', ['playId', 'playList', 'isPlaying'])
-    // currentRow () {
-    //   this.playList.forEach((item, i) => {
-    //     if (item.id === this.playId) {
-    //       return i
-    //     }
-    //   })
-    //   return 0
-    // }
+    ...mapState('play', ['playId', 'playList'])
   }
-
 }
 </script>
 

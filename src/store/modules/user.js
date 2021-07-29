@@ -1,3 +1,5 @@
+import { userPlaylistAPI, getLikeListAPI } from '@/api/userAPI.js'
+import { Message } from 'element-ui'
 export default {
   namespaced: true,
   state: JSON.parse(localStorage.getItem('music_user')) || {
@@ -6,26 +8,29 @@ export default {
     // 用户信息
     userInfo: {},
     userPlayList: {
-      playlist: []
+      // 用户歌单
+      playlist: [],
+      // 用户喜欢的歌曲
+      userLikeSongList: []
     }
   },
   mutations: {
     // 储存用户数据
     initUserInfo (state, userinfo) {
       state.userInfo = userinfo
-      localStorage.setItem('music_user', JSON.stringify(state))
+      // localStorage.setItem('music_user', JSON.stringify(state))
     },
     // 储存cookie
     initUserCookie (state, cookie) {
       state.cookie = cookie
-      localStorage.setItem('music_user', JSON.stringify(state))
+      // localStorage.setItem('music_user', JSON.stringify(state))
     },
     // 退出登录
     clearUserInfo (state) {
       console.log('清空数据')
       state.userInfo = {}
       state.cookie = ''
-      localStorage.setItem('music_user', JSON.stringify(state))
+      // localStorage.setItem('music_user', JSON.stringify(state))
       this.commit('user/clearAllCookie')
       // this.commit('localStorageSet')
     },
@@ -45,9 +50,33 @@ export default {
     },
     changeUserPlayList (state, payload) {
       state.userPlayList.playlist = payload
-      localStorage.setItem('music_user', JSON.stringify(state))
+      // localStorage.setItem('music_user', JSON.stringify(state))
+    },
+    changeUserLikeList (state, payload) {
+      state.userPlayList.userLikeSongList = payload
+      // localStorage.setItem('music_user', JSON.stringify(state))
     }
 
+  },
+  actions: {
+    async initUserPlayList (ctx, id) {
+      console.log('获取用户歌单')
+      // 如果是登录状态获取用户歌单
+      const res = await userPlaylistAPI(id)
+      // console.log(res)
+      console.log(res)
+      if (res.data.code === 200) {
+        // console.log('接受', res.data)
+        ctx.commit('changeUserPlayList', res.data.playlist)
+      } else if (res.data.code === 400) {
+        Message.warning(res.data.message)
+      }
+    },
+    async getUserLoveSong (ctx, id) {
+      const res = await getLikeListAPI(id)
+      console.log(res)
+      ctx.commit('changeUserLikeList', res.data.ids)
+    }
   },
   getters: {
     // 登录状态

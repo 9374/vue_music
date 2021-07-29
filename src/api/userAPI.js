@@ -110,3 +110,22 @@ export const userLoginOut = function () {
     url: '/logout'
   })
 }
+// 获取用户喜欢的歌曲
+export const getLikeListAPI = function (uid) {
+  return request({
+    url: '/likelist',
+    params: {
+      uid
+    }
+  })
+}
+// 喜欢音乐
+export const likeSongApi = function (id, like) {
+  return request({
+    url: '/like',
+    params: {
+      id,
+      like
+    }
+  })
+}

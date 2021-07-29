@@ -81,3 +81,12 @@ export const getMusicStatusAPI = function (id) {
     }
   })
 }
+export const subscribeSongListAPI = function (id, t) {
+  return request({
+    url: '/playlist/subscribe',
+    params: {
+      id,
+      t
+    }
+  })
+}
