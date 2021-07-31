@@ -49,30 +49,30 @@
 
 #### 主页
 
-![](https://gitee.com/mana9/img-folder/blob/master/music_pc2/home.jpg)
+![主页](https://gitee.com/mana9/img-folder/raw/master/music_pc2/home.jpg)
 
 #### 歌单详情
 
-![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/songListDetail.jpg)
+![歌单详情](https://gitee.com/mana9/img-folder/raw/master/music_pc2/songListDetail.jpg)
 
 #### 播放列表
 
-![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/playList.jpg)
+![播放列表](https://gitee.com/mana9/img-folder/raw/master/music_pc2/playList.jpg)
 
 #### 搜索详情
 
-![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/searchList.jpg)
+![搜索详情](https://gitee.com/mana9/img-folder/raw/master/music_pc2/searchList.jpg)
 
 #### 歌单列表
 
-![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/allSongList.jpg)
+![歌单列表](https://gitee.com/mana9/img-folder/raw/master/music_pc2/allSongList.jpg)
 
 #### 最新音乐
 
-![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/newSongList.jpg)
+![最新音乐](https://gitee.com/mana9/img-folder/raw/master/music_pc2/newSongList.jpg)
 
 #### 播放详情
 
-![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/playDetail.jpg)
+![播放详情](https://gitee.com/mana9/img-folder/raw/master/music_pc2/playDetail.jpg)
 
 #### 登录
