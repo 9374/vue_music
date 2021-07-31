@@ -49,7 +49,7 @@
 
 #### 主页
 
-![](https://gitee.com/mana9/img-folder/blob/master/music_pc2/home.jpg)
+![Image text](https://gitee.com/mana9/img-folder/blob/master/music_pc2/home.jpg)
 
 #### 歌单详情
 
