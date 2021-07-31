@@ -2,7 +2,7 @@
 
 ### 前言
 
-路过的朋友们随手点个Star。本项目仅用于学习。感谢～
+路过的朋友们随手点个 Star。本项目仅用于学习。感谢～
 
 ### 项目介绍
 
@@ -10,11 +10,11 @@
 
 后端接口来自 https://github.com/Binaryify/NeteaseCloudMusicApi
 
-主页播放器样式来自 https://github.com/lizzz0523/limni   功能实现改为audio标签 
+主页播放器样式来自 https://github.com/lizzz0523/limni 功能实现改为 audio 标签
 
-项目参考于网易云音乐PC版app，目前实现功能
+项目参考于网易云音乐 PC 版 app，目前实现功能
 
- 登录【手机登录，邮箱登录，二维码等离】，
+登录【手机登录，邮箱登录，二维码等离】，
 
 收藏/取消收藏歌单，
 
@@ -36,16 +36,16 @@
 
    1.3. node app
 
-2. 运行本仓库代码 
+2. 运行本仓库代码
    2.1. git clone 本仓库地址
 
    2.2. cnpm install
 
    2.3. npm run serve
 
-3. 接口地址请在 src/api/request.js中更改
+3. 接口地址请在 src/api/request.js 中更改
 
-###  项目效果预览
+### 项目效果预览
 
 #### 主页
 
