@@ -10,7 +10,8 @@ export default {
       playId: '',
       // 歌曲总时间
       totalTime: 0,
-      PlayStateId: 0
+      PlayStateId: 0,
+      newCurrentTime: 0
     },
     // 当前播放序列
     currentIndex: 0,
@@ -27,6 +28,9 @@ export default {
   mutations: {
     changePlaycurrentTime (state, payload) {
       state.nowPlay.currentTime = payload
+    },
+    changeNewCurrentTime (state, payload) {
+      state.nowPlay.newCurrentTime = payload
     },
     changePlayTotalTime (state, payload) {
       state.nowPlay.totalTime = payload

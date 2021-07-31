@@ -1,7 +1,7 @@
 <template>
   <div>
     <i
-      v-show="id === playId"
+      v-show="id === nowPlay.playId"
       :class="isPlaying ? 'el-icon-loading' : 'el-icon-caret-right'"
     >
     </i>
@@ -19,7 +19,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('play', ['isPlaying', 'playId'])
+    ...mapState('play', ['isPlaying', 'nowPlay'])
   }
 }
 </script>

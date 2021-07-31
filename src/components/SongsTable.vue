@@ -122,8 +122,7 @@ export default {
     // 当前播放的音乐样式
     tableRowClassName ({ row, rowIndex }) {
       // console.log(row, rowIndex)
-      // console.log(this.playId, row.id)
-      if (row.id === this.playId) {
+      if (row.id === this.nowPlay.playId) {
         return 'success-row'
       } else {
         return ''
@@ -131,7 +130,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('play', ['playId', 'playList'])
+    ...mapState('play', ['nowPlay', 'playList'])
   }
 }
 </script>

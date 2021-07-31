@@ -2,7 +2,7 @@
   <div>
     <i
       @click="likeSong(id)"
-      v-show="id !== playId || state"
+      v-show="id !== nowPlay.playId || state"
       :class="isLike ? 'el-icon-star-on' : 'el-icon-star-off'"
     >
     </i>
@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     ...mapGetters('user', ['isLogin']),
-    ...mapState('play', ['playId', 'isPlaying']),
+    ...mapState('play', ['nowPlay', 'isPlaying']),
     ...mapState('user', ['userPlayList']),
     isLike () {
       // if (this.userPlayList.userLikeSongList.some(item => id === item)) {

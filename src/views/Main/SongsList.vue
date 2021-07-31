@@ -122,25 +122,29 @@ export default {
         this.changePlayId(this.seeSongsList.tracks[0].id)
       }
     },
-    async subscribeSongList (state, id) {
+    subscribeSongList (state, id) {
       // 如果值为真发送取消收藏请求，否则发送收藏请求
       const a = state ? 2 : 1
       if (state) {
-        const res = await subscribeSongListAPI(id, a)
-        if (res.data.code === 200) {
-          this.$message.success('取消收藏成功')
-          this.seeSongsList.subscribed = false
-          this.initUserPlayList(this.userInfo.userId)
-          console.log(res)
-        }
+        this.$confirm('确认取消收藏歌单吗?', '提示').then(async () => {
+          const res = await subscribeSongListAPI(id, a)
+          if (res.data.code === 200) {
+            this.$message.success('取消收藏成功')
+            this.seeSongsList.subscribed = false
+            this.initUserPlayList(this.userInfo.userId)
+            console.log(res)
+          }
+        }).catch(console.log)
       } else {
-        const res = await subscribeSongListAPI(id, a)
-        if (res.data.code === 200) {
-          this.$message.success('收藏成功')
-          this.seeSongsList.subscribed = true
-          this.initUserPlayList(this.userInfo.userId)
-          console.log(res)
-        }
+        this.$confirm('确认收藏歌单吗?', '提示').then(async () => {
+          const res = await subscribeSongListAPI(id, a)
+          if (res.data.code === 200) {
+            this.$message.success('收藏成功')
+            this.seeSongsList.subscribed = true
+            this.initUserPlayList(this.userInfo.userId)
+            console.log(res)
+          }
+        }).catch(console.log)
       }
     }
   },

@@ -12,6 +12,7 @@
     <div class="progressBox">
       <span class="Time">{{ s_to_hs(nowPlay.currentTime) }}</span>
       <el-slider
+        @change="changeCurrentTime"
         :format-tooltip="formatTime"
         v-model="nowPlay.currentTime"
         :max="nowPlay.totalTime"
@@ -33,10 +34,13 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('play', ['playNextSong', 'playPrevSong', 'changePlayState']),
+    ...mapMutations('play', ['playNextSong', 'playPrevSong', 'changePlayState', 'changeNewCurrentTime']),
     s_to_hs,
     formatTime (value) {
       return s_to_hs(value)
+    },
+    changeCurrentTime (newTime) {
+      this.changeNewCurrentTime(newTime)
     },
     // 点击播放按钮
     onplay () {
@@ -53,7 +57,7 @@ export default {
     },
     // 上一首
     prev () {
-      this.playPrevSong(this.playId)
+      this.playPrevSong(this.nowPlay.playId)
     }
   },
   computed: {

@@ -113,6 +113,8 @@ export default {
         })
 
         state.newLyric2.lyric = result
+      } else {
+        state.newLyric2.lyric = [[0, '当前歌曲暂无歌词']]
       }
 
       // console.log(this.lyric);

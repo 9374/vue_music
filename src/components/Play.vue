@@ -107,6 +107,9 @@ export default {
       // 获取当前播放歌曲的歌词
       this.getCurrentPlayLyric(newval)
     },
+    'nowPlay.newCurrentTime' (newval) {
+      this.$refs.audio.currentTime = newval
+    },
     isPlaying (newval) {
       if (newval) {
         this.$refs.audio.play()
@@ -134,7 +137,7 @@ export default {
     },
     // 上一首
     prev () {
-      this.playPrevSong(this.playId)
+      this.playPrevSong(this.nowPlay.playId)
       console.log('当前播放id', this.nowPlay.playId, '点击上一首')
     },
     // 歌曲加载完成自动获取总时长
@@ -147,7 +150,6 @@ export default {
       this.changePlayState(true)
       setTimeout(() => {
         if (this.nowPlay.playId !== this.currentPlay.id) {
-          // console.log(this.playId)
           this.getCurrentPlay(this.nowPlay.playId)
         }
         if (!this.lyric) {
