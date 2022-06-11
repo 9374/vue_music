@@ -6,7 +6,7 @@
 
 ### 项目介绍
 
-在线演示 https://music.sn9374.com
+在线演示 https://music.eomb.cn
 
 后端接口来自 https://github.com/Binaryify/NeteaseCloudMusicApi
 
