@@ -6,7 +6,7 @@
 
 ### 项目介绍
 
-在线演示 https://music.eomb.cn
+在线演示 https://eomb.cn/vue_music
 
 后端接口来自 https://github.com/Binaryify/NeteaseCloudMusicApi
 
