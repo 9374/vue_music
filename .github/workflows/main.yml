@@ -11,6 +11,7 @@ jobs:
    build-and-deploy:
       # 服务器环境：最新版 Ubuntu
       runs-on: ubuntu-latest
+      name: Deploy vue_muisc
       steps:
          # 拉取代码
          - name: Checkout🛎️

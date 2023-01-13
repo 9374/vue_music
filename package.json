@@ -2,7 +2,6 @@
   "name": "music_pc2",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://9374.github.io/map",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
