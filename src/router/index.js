@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import '../public-path' // 重点3： 引入public-path文件
+
 // import Songs from '@/views/songs.vue'
 // const Main = () => import('@/views/Main/Main.vue')
 // import Main from '@/views/Main/Main.vue'
@@ -20,7 +22,6 @@ const Layout = () => import('@/layout/index.vue')
 // import Play from '@/components/Play.vue'
 // import test from '@/views/test.vue'
 Vue.use(VueRouter)
-
 const routes = [
   // 重定向至首页
   { path: '/', redirect: '/home' },
@@ -56,7 +57,9 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  base: window.__POWERED_BY_QIANKUN__ ? '/vue' : '/', // 重点4：qiankun进入子应用时，返回true
+  mode: 'history',
   routes
-})
+});
 
 export default router
