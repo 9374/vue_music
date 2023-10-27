@@ -6,10 +6,10 @@ const obj = {
   axios: 'axios',
   'element-ui': 'ELEMENT'
 }
-const { name } = require("./package");
+const { name } = require('./package');
 module.exports = {
   configureWebpack: {
-    externals: process.env.NODE_ENV === "development" ? {} : obj
+    externals: process.env.NODE_ENV === 'development' ? {} : {}
   },
   devServer: {
     open: true,
@@ -23,24 +23,24 @@ module.exports = {
       //   },
       //   rewrite: path => path.replace(/^\//, "") // 不可以省略rewrite
       // },
-      "/vue": {
-        target: "https://pl-fe.cn/cloud-music-api",
+      '/vue': {
+        target: 'https://pl-fe.cn/cloud-music-api',
         changeOrigin: true,
         pathRewrite: {
-          "^/vue": "/"
+          '^/vue': '/'
         },
-        rewrite: path => path.replace(/^\//, "") // 不可以省略rewrite
+        rewrite: path => path.replace(/^\//, '') // 不可以省略rewrite
       }
     },
     headers: {
       // 重点7：同重点1，允许子应用跨域
-      "Access-Control-Allow-Origin": "*"
+      'Access-Control-Allow-Origin': '*'
     }
     // https: true
   },
-  publicPath: "./",
+  publicPath: './',
   chainWebpack: config => {
-    config.plugin("html").tap(args => {
+    config.plugin('html').tap(args => {
       args[0].mode = process.env.NODE_ENV;
       console.log(args);
       return args;
@@ -50,7 +50,7 @@ module.exports = {
   configureWebpack: {
     output: {
       library: `${name}-[name]`,
-      libraryTarget: "umd", // 把子应用打包成 umd 库格式
+      libraryTarget: 'umd', // 把子应用打包成 umd 库格式
       jsonpFunction: `webpackJsonp_${name}`
     }
   }
