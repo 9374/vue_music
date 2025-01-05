@@ -18,7 +18,10 @@ jobs:
            uses: actions/checkout@v3
            with:
               persist-credentials: false
-
+         - name: 设置 Node.js 版本
+           uses: actions/setup-node@v4
+           with:
+              node-version: '16'
          # 生成静态文件（export NODE_OPTIONS=--max_old_space_size=4096  解决JavaScript heap out of memory问题）
          - name: set npm
            run: npm config set registry https://registry.npmmirror.com
