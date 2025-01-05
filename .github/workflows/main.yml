@@ -23,12 +23,12 @@ jobs:
            with:
               node-version: '16'
          # 生成静态文件（export NODE_OPTIONS=--max_old_space_size=4096  解决JavaScript heap out of memory问题）
-         - name: set npm
-           run: npm config set registry https://registry.npmmirror.com
-         - name: install npm
-           run: npm install 
-         - name: export
-           run: export NODE_OPTIONS=--max_old_space_size=4096
+        #  - name: set npm
+        #    run: npm config set registry https://registry.npmmirror.com
+        #  - name: install npm
+        #    run: npm install   && export NODE_OPTIONS=--max_old_space_size=4096
+         - name: install yarn
+           run: yarn install && export NODE_OPTIONS=--max_old_space_size=4096
          - name: Build 📁
            run:  npm run build
 
