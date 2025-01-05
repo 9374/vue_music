@@ -6,7 +6,7 @@ const obj = {
   axios: 'axios',
   'element-ui': 'ELEMENT'
 }
-// const { name } = require('./package');
+const { name } = require('./package');
 module.exports = {
   // 以前想着用cdn加速 这些都不加载 后来cdn 总连不上 还是本地走吧
   // configureWebpack: {
@@ -53,11 +53,11 @@ module.exports = {
     });
   },
   // 自定义webpack配置
-  // configureWebpack: {
-  //   output: {
-  //     library: `${name}-[name]`,
-  //     libraryTarget: "umd", // 把子应用打包成 umd 库格式
-  //     jsonpFunction: `webpackJsonp_${name}`
-  //   }
-  // }
+  configureWebpack: {
+    output: {
+      library: `${name}-[name]`,
+      libraryTarget: "umd", // 把子应用打包成 umd 库格式
+      jsonpFunction: `webpackJsonp_${name}`
+    }
+  }
 };

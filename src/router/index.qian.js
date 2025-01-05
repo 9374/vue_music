@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-//  乾坤
-// import '../public-path' // 重点3： 引入public-path文件
+import '../public-path' // 重点3： 引入public-path文件
 
 // import Songs from '@/views/songs.vue'
 // const Main = () => import('@/views/Main/Main.vue')
@@ -56,15 +55,11 @@ const routes = [
   }
 
 ]
-// 乾坤 
-// const router = new VueRouter({
-//   base: window.__POWERED_BY_QIANKUN__ ? '/vue' : '/', // 重点4：qiankun进入子应用时，返回true
-//   mode: 'history',
-//   routes
-// });
+
 const router = new VueRouter({
-  // base: window.__POWERED_BY_QIANKUN__ ? "/vue" : "/", // 重点4：qiankun进入子应用时，返回true
-  mode: "hash",
+  base: window.__POWERED_BY_QIANKUN__ ? '/vue' : '/', // 重点4：qiankun进入子应用时，返回true
+  mode: 'history',
   routes
 });
+
 export default router
