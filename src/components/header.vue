@@ -19,9 +19,9 @@
             icon="el-icon-user-solid"
           ></el-avatar>
           <el-avatar
-            v-show="isLogin"
+            v-show="isLogin&&userInfo"
             :src="
-              userInfo.avatarUrl
+              userInfo
                 ? userInfo.avatarUrl + '?param=50y50'
                 : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
             "

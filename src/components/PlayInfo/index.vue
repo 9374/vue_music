@@ -6,7 +6,7 @@
     </div>
     <div class="songInfo">
       <div class="songname">{{ currentPlay.name }}</div>
-      <div class="sonsAuthor">{{ currentPlay.ar[0].name }}</div>
+      <div class="sonsAuthor" v-if="currentPlay.ar && currentPlay.ar.length">{{ currentPlay.ar[0].name }}</div>
     </div>
   </div>
 </template>

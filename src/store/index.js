@@ -11,6 +11,6 @@ const store = new Vuex.Store({
     user,
     play
   },
-  plugins: [createPersistedState({ key: 'music_9374' })]
+  plugins: [createPersistedState({ key: 'music_user' })]
 })
 export default store

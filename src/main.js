@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'development') {
   Vue.use(ElementUI)
 }
 Vue.use(myconmponent)
-// import 'element-ui/lib/theme-chalk/index.css'
+import 'element-ui/lib/theme-chalk/index.css'
 Vue.config.productionTip = false
 let instance = null
 // 文档中将此代码单独放到了一个文件中，此处是直接写在了 main.js 中，两种都可。但是 eslint-disable 需要加上

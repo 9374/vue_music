@@ -3,14 +3,16 @@ import axios from 'axios'
 import store from '@/store/index.js'
 // import { Message } from 'element-ui'
 const request = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? '' : 'https://pl-fe.cn/cloud-music-api/'
+  baseURL: 'https://api.zvue.cn/music/'
+  // process.env.NODE_ENV === 'development' ? 'https://api.zvue' : 'https://pl-fe.cn/cloud-music-api/'
 })
 // 添加请求拦截器
 request.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
   // console.log(config.url.indexOf('/login'))
   console.log(config.url)
-  config.url = `/vue${config.url}`
+  // config.url = `/vue${config.url}`
+  // config.url = `${config.url}`;
   // eslint-disable-next-line eqeqeq
   if (config.method == 'post') {
     // console.log('是登录接口')

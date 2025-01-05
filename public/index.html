@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
-       <% if(htmlWebpackPlugin.options.mode==='production') { %> 
+       <!-- <% if(htmlWebpackPlugin.options.mode==='production') { %> 
         <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.14/theme-chalk/index.min.css" rel="stylesheet">
-        <% } %>
+        <% } %> -->
   </head>
   <body style="overflow:hidden">
     <noscript>
@@ -19,18 +19,13 @@
       >
     </noscript>
     <div id="app"></div>
-    <% if(htmlWebpackPlugin.options.mode==='production') { %>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js"></script> -->
+    <!-- <% if(htmlWebpackPlugin.options.mode==='production') { %>
     <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.0/vue.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue-router@3.2.0/dist/vue-router.min.js"></script> -->
     <script src="https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vuex@3.4.0/dist/vuex.min.js"></script> -->
     <script src="https://cdn.bootcdn.net/ajax/libs/vuex/3.6.0/vuex.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script> -->
-    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.2/index.min.js"></script> -->
     <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.14/index.min.js"></script>
-    <% } %>
+    <% } %> -->
     <!-- built files will be auto injected -->
   </body>
 </html>

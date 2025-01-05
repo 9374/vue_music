@@ -6,7 +6,7 @@
     <div class="Container">
       <div class="title">
         <h2>{{ currentPlay.name }}</h2>
-        <div class="singer">{{ currentPlay.ar[0].name }}</div>
+        <div class="singer" v-if="currentPlay.ar&&currentPlay.ar.length">{{ currentPlay.ar[0].name }}</div>
       </div>
       <div class="songDetail">
         <div class="songCover">
